@@ -7,7 +7,7 @@ use strict;
 my $qryfolder = shift @ARGV;
 my $dbfile = shift @ARGV;
 my $tgtfolder = shift @ARGV;
-my $platform = lc(shift @ARGV);
+my $platform = "zcluster";
 my $thread = 4;
 
 ## start running the script
