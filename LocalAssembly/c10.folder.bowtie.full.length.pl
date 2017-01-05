@@ -67,8 +67,10 @@ foreach my $sub (@subs){
     	system("qsub $shell");
 	}elsif($platform eq "zcluster"){
 		system("qsub -q rcc-30d -pe thread $thread $shell");
-		while (not -e "flag$sub.txt") {sleep 5}
 	}else{
 		die "Please provide the platform: 'Sapelo' or 'Zcluster'";
 	}
 }
+
+while (not -e "flag$sub.txt") {sleep 5}
+
