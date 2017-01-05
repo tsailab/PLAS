@@ -53,9 +53,11 @@ foreach my $sub (@subs){
 	
 	if($sub =~ /F$|Fu$|R$/){
 		print SHL "time bowtie2 -f -x $dbfile -p $thread -U $R4 --un $tgtfolder/$sub/unmapped.reads.$sub.long.fasta\n";
+		print SHL "echo You may proceed! >> flag$sub.txt";
 	}else{
 		print SHL "time bowtie2 -f -x $dbfile -p $thread -1 $R1 -2 $R2 -U $R3 --un-conc $tgtfolder/$sub/unmapped.reads.$sub.fasta --un $tgtfolder/$sub/unmapped.reads.$sub.single.fasta\n";
-		print SHL "cat $tgtfolder/$sub/unmapped.reads.$sub.single.fasta >> $tgtfolder/$sub/unmapped.reads.$sub.1.fasta";
+		print SHL "cat $tgtfolder/$sub/unmapped.reads.$sub.single.fasta >> $tgtfolder/$sub/unmapped.reads.$sub.1.fasta\n";
+		print SHL "echo You may proceed! >> flag$sub.txt";
 	}
 	
 	print SHL "\n";
@@ -65,6 +67,7 @@ foreach my $sub (@subs){
     	system("qsub $shell");
 	}elsif($platform eq "zcluster"){
 		system("qsub -q rcc-30d -pe thread $thread $shell");
+		while (not -e "flag$sub.txt") {sleep 5}
 	}else{
 		die "Please provide the platform: 'Sapelo' or 'Zcluster'";
 	}
