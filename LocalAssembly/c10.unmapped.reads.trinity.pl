@@ -41,10 +41,13 @@ if($platform eq "sapelo"){
 	$memory = "20";
 	
 	print SHL "time /usr/local/trinity/r20140717/Trinity --seqType fa --CPU $thread --JM ",$memory,"G --left ", join(",",@left), " --right ", join(",",@right), " --output 10.unmapped.reads.trinity\n";
+	print SHL "echo You may proceed! >> FLAGFILE.txt";
 
 	close SHL;
 	system("chmod u+x $shell");
 	system("qsub -q rcc-30d -pe thread $thread -l mem_total=$memory"."g $shell");
+	while (not -e "FLAGFILE.txt") {sleep 5};
+	system("rm -f FLAGFILE.txt");
 }else{
 	die "Please provide the platform: 'Sapelo' or 'Zcluster'";
 }

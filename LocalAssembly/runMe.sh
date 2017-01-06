@@ -86,7 +86,7 @@ cp 01.data/05.splitGenes/03.Full.Length/full.length.contigs.nucl.fasta 08.full.l
 time perl 00.script/c9.get.full.length.seq.pl 08.full.length/count3 08.full.length/full.length.contigs.nucl.fasta 08.full.length/Final.v1.fasta
 
 : '
-## start of second part
+## FIXES FOR THIS SECTION COMPLETED
 time /usr/local/ncbiblast+/2.2.29/bin/blastx -db 01.data/00.PriorData/ptr.proteome.fa -query 08.full.length/Final.v1.fasta -out 08.full.length/Final.v1.ptr.blastx.out -evalue 1e-5 -outfmt 6 -num_threads 32 -max_target_seqs 1
 
 time /usr/local/ncbiblast+/2.2.29/bin/makeblastdb -in 08.full.length/Final.v1.fasta -dbtype nucl
@@ -105,11 +105,14 @@ cd ../
 #module load bowtie2/2.2.4
 export PATH=$PATH:/usr/local/bowtie2/2.2.3/bin/
 time bowtie2-build -f -q 08.full.length/Final.fasta 08.full.length/Final
+wait
 time perl 00.script/c10.folder.bowtie.full.length.pl 01.data/02.Fasta 08.full.length/Final 09.bowtie.full.length unmap $platform
+wait
 time perl 00.script/c10.unmapped.reads.trinity.pl 09.bowtie.full.length $platform
+wait
 time perl 00.script/06.truncate.header.pl 10.unmapped.reads.trinity/Trinity.fasta 10.unmapped.reads.trinity/Trinity.new.fasta
 
-## end of the second part
+## START FIXES HERE
 
 ## make blast database for Mimulus and Ath
 #time /usr/local/ncbiblast+/2.2.29/bin/makeblastdb -in 01.data/00.PriorData/ptr.proteome.fa -dbtype prot
