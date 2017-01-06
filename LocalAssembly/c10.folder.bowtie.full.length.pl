@@ -17,6 +17,7 @@ closedir QRY;
 
 system("rm -rf 00.script/bowtie.log/bowtie.run.c10");
 system("mkdir -p 00.script/bowtie.log/bowtie.run.c10");
+system("rm -f flag*");
 
 foreach my $sub (@subs){
 	my $shell = "00.script/bowtie.log/bowtie.run.c10/bowtie.full.length.$sub.sh";
@@ -72,5 +73,6 @@ foreach my $sub (@subs){
 	}
 }
 
-while (not -e "flag$sub.txt") {sleep 5}
-
+foreach my $sub (@subs) {
+while (not -e "flag$sub.txt") {sleep 5};
+}
