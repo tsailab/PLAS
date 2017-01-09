@@ -18,7 +18,9 @@ system("mkdir -p 00.script/shell.script");
 
 opendir(SRC, $srcfolder) or die "ERROR: Cannot open $srcfolder: $!";
 my @subs = sort(grep(/\w+/, readdir(SRC)));
-			
+
+system("rm -f flag*");
+
 foreach my $sub (@subs){
 	if($sub =~ /F$|Fu$|R$/){
 		next;
@@ -49,7 +51,8 @@ foreach my $sub (@subs){
 		die "Please provide the platform: 'Sapelo' or 'Zcluster'";
 	}
 	print SHL "time python2.7 00.script/01.fastaCombinePairedEnd.py $srcfolder/$sub/$sub.R1.fastq $srcfolder/$sub/$sub.R2.fastq $separater\n";
-	
+	print SHL "echo You may proceed! >> flag$sub.txt";
+
 	close SHL;
 	
 	system("chmod u+x $shell");
@@ -61,6 +64,11 @@ foreach my $sub (@subs){
 		die "Please provide the platform: 'Sapelo' or 'Zcluster'";
 	}
 }
+
+foreach my $sub (@subs) {
+while (not -e "flag$sub.txt") {sleep 5};
+}
+
 close SRC;
 
 system("echo 'Finished 01.folder.fastaCombinePairedEnd.pl!' >> job.monitor.txt");
