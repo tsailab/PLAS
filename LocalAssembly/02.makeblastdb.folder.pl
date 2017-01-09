@@ -14,6 +14,7 @@ opendir(SRC, $srcfolder) or die "ERROR: Cannot open $srcfolder: $!";
 my @subs = sort(grep(/^[0-9]+/, readdir(SRC)));
 
 system("mkdir -p 00.script/shell.script");
+system("rm -f flag*");
 
 foreach my $sub (@subs){
 	my $shell = "00.script/shell.script/makeblastdb.$sub.sh";
@@ -50,7 +51,8 @@ foreach my $sub (@subs){
 	if($diamond eq "DIAMOND"){
 		print SHL "time $command2/diamond makedb --in $srcfolder/$sub/$sub.fasta -d $srcfolder/$sub/$sub\n";
 	}
-		
+	print SHL "echo You may proceed! >> FLAGFILE.txt";
+	
 	close(SHL);
 	
 	system("chmod u+x $shell");
@@ -61,9 +63,13 @@ foreach my $sub (@subs){
 	}else{
 		die "Please provide the platform: 'Sapelo' or 'Zcluster'";
 	}
+	print SHL "echo You may proceed! >> flag$sub.txt";
+
 }
 
-
+foreach my $sub (@subs) {
+while (not -e "flag$sub.txt") {sleep 5};
+}
 close(SRC);
 system("echo 'Finished 02.makeblastdb.folder.pl!' >> job.monitor.txt");
 system("chmod 777 -R 00.script");

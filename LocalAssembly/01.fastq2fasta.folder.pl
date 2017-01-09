@@ -19,6 +19,7 @@ my @subs = sort(grep(/\w+/, readdir(SRC)));
 system("rm -rf 00.script/shell.script.previous");
 system("mv 00.script/shell.script 00.script/shell.script.previous");
 system("mkdir -p 00.script/shell.script");
+system("rm -f flag*");
 
 foreach my $sub (@subs){
 	my $shell = "00.script/shell.script/fastx.fastq2fasta.$sub.sh";
@@ -54,7 +55,7 @@ foreach my $sub (@subs){
 	}else{
 		die "Error: Please specify the mode as 'single-end' or 'paired-end'.";
 	}
-	
+	print SHL "echo You may proceed! >> flag$sub.txt";
 	close(SHL);
 		
 	system("chmod u+x $shell");
@@ -65,6 +66,9 @@ foreach my $sub (@subs){
 	}else{
 		die "Please provide the platform: 'Sapelo' or 'Zcluster'";
 	}
+}
+foreach my $sub (@subs) {
+while (not -e "flag$sub.txt") {sleep 5};
 }
 
 close(SRC);
