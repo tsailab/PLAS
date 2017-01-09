@@ -32,12 +32,12 @@ evalue=1e-3
 while [ $a -le 14 ]
 do
     b=`expr $a + 1`
-    echo "The run: $b" >> job.monitor.txt
+    echo "Run number: $b" >> job.monitor.txt
 
     if [ $b -eq 0 ];then
         time perl 00.script/03.diamond.folder.pl 01.data/02.Fasta 01.data/05.splitGenes/01.Protein/run.$b 03.blast/03.bowtie.nucl/run.$b nucl bowtie.log/bowtie.run.$b $evalue $mode $platform 
         time perl 00.script/040.folder.retrievebowtie.reads.pl 03.blast/03.bowtie.nucl/run.$b 04.retrieve.reads/03.bowtie.nucl/run.$b nucl bowtie.log/bowtie.run.$b 1000 genome $mode $platform 20
-        echo "Have been here"
+        echo "Already been done"
     else
         time perl 00.script/021.makebowtiedb.folder.pl 01.data/05.splitGenes/02.Transcript/run.$b $platform 10
         time perl 00.script/03.bowtie.folder.pl 01.data/02.Fasta 01.data/05.splitGenes/02.Transcript/run.$b 03.blast/03.bowtie.nucl/run.$b nucl local bowtie.log/bowtie.run.$b $mode $platform 10
@@ -69,17 +69,22 @@ cp 01.data/05.splitGenes/03.Full.Length/count3 08.full.length/
 cp 01.data/05.splitGenes/03.Full.Length/full.length.contigs.nucl.fasta 08.full.length/
 time perl 00.script/c9.get.full.length.seq.pl 08.full.length/count3 08.full.length/full.length.contigs.nucl.fasta 08.full.length/Final.v1.fasta
 
-## everything below needs to be run manually
 time /usr/local/ncbiblast+/2.2.29/bin/blastx -db 01.data/00.PriorData/ptr.proteome.fa -query 08.full.length/Final.v1.fasta -out 08.full.length/Final.v1.ptr.blastx.out -evalue 1e-5 -outfmt 6 -num_threads 32 -max_target_seqs 1
-
+wait
 time /usr/local/ncbiblast+/2.2.29/bin/makeblastdb -in 08.full.length/Final.v1.fasta -dbtype nucl
+wait
 time /usr/local/ncbiblast+/2.2.29/bin/blastn -db 08.full.length/Final.v1.fasta -query 08.full.length/Final.v1.fasta -out 08.full.length/Final.v1.blastn.xml.out -evalue 1e-5 -outfmt 5 -max_target_seqs 5
+wait
 time perl 00.script/c11.remove.redundancy.pl 08.full.length/Final.v1.blastn.xml.out 08.full.length/Final.v1.fasta 08.full.length/Final.v2.fasta self 08.full.length/Final.v1.ptr.blastx.out > 08.full.length/record.run1
-
+wait
 time /usr/local/ncbiblast+/2.2.29/bin/makeblastdb -in 08.full.length/Final.v2.fasta -dbtype nucl
+wait
 time /usr/local/ncbiblast+/2.2.29/bin/blastn -db 08.full.length/Final.v2.fasta -query 08.full.length/Final.v2.fasta -out 08.full.length/Final.v2.blastn.xml.out -evalue 1e-5 -outfmt 5 -max_target_seqs 5
+wait
 time /usr/local/ncbiblast+/2.2.29/bin/blastx -db 01.data/00.PriorData/ptr.proteome.fa -query 08.full.length/Final.v2.fasta -out 08.full.length/Final.v2.ptr.blastx.out -evalue 1e-5 -outfmt 6 -num_threads 32 -max_target_seqs 1
+wait
 time perl 00.script/101.transfer.saturate.seq.pl 08.full.length/Final.v2.ptr.blastx.out 08.full.length/Final.v2.fasta 01.data/00.PriorData/ptr.proteome.fa 08.full.length Final.v2.ptr pct 0.02
+wait
 cd 08.full.length/
 ln -sf Final.v2.ptr.full.contigs.nucl.fasta Final.fasta
 cd ../
@@ -93,12 +98,15 @@ wait
 time perl 00.script/c10.unmapped.reads.trinity.pl 09.bowtie.full.length $platform
 wait
 time perl 00.script/06.truncate.header.pl 10.unmapped.reads.trinity/Trinity.fasta 10.unmapped.reads.trinity/Trinity.new.fasta
-
+wait
 
 ### combine full length contigs from local assembly and assembly of unmapped reads
 time /usr/local/ncbiblast+/2.2.29/bin/makeblastdb -in 08.full.length/Final.fasta -dbtype nucl
+wait
 time /usr/local/ncbiblast+/2.2.29/bin/blastn -db 08.full.length/Final.fasta -query 10.unmapped.reads.trinity/Trinity.new.fasta -out 10.unmapped.reads.trinity/Trinity.new.blastn.xml.out -evalue 1e-5 -outfmt 5 -max_target_seqs 1
+wait
 time perl 00.script/c11.remove.redundancy.pl 10.unmapped.reads.trinity/Trinity.new.blastn.xml.out 10.unmapped.reads.trinity/Trinity.new.fasta 10.unmapped.reads.trinity/temp.fasta query > 10.unmapped.reads.trinity/remove.redundancy.log
+wait
 mkdir 01.data/06.TargetTranscriptome
 cat 08.full.length/Final.fasta 10.unmapped.reads.trinity/temp.fasta > 01.data/06.TargetTranscriptome/transcriptome.v1.fa
 #rm 10.unmapped.reads.trinity/temp.fasta
