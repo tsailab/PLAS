@@ -1,0 +1,1 @@
+mkdir -p 01.data/{00.PriorData,01.Fastq,03.MCL} 03.blast/03.bowtie.nucl 04.retrieve.reads/03.bowtie.nucl 06.assembly/03.bowtie.nucl 07.map.back/{02.blastn,03.bowtie.nucl} 08.full.length 09.bowtie.full.length/{1T,2T,3T} 10.unmapped.reads.trinity
