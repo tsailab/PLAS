@@ -2,6 +2,7 @@
 
 platform="Zcluster"
 mode="paired-end"
+###Only run AFTER preRun.sh has been run at least once for data set!
 
 ###### preprocess data
 
