@@ -106,7 +106,6 @@ time /usr/local/ncbiblast+/2.2.29/bin/blastn -db 08.full.length/Final.fasta -que
 wait
 time perl 00.script/c11.remove.redundancy.pl 10.unmapped.reads.trinity/Trinity.new.blastn.xml.out 10.unmapped.reads.trinity/Trinity.new.fasta 10.unmapped.reads.trinity/temp.fasta query > 10.unmapped.reads.trinity/remove.redundancy.log
 wait
-mkdir 01.data/06.TargetTranscriptome
 cat 08.full.length/Final.fasta 10.unmapped.reads.trinity/temp.fasta > 01.data/06.TargetTranscriptome/transcriptome.v1.fa
 #rm 10.unmapped.reads.trinity/temp.fasta
 
