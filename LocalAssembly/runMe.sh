@@ -8,9 +8,9 @@ mode="paired-end"
 
 ## manually run
 # construct DIAMOND and blast database for the meta-group
-time perl 00.script/02.makeblastdb.folder.pl 01.data/05.splitGenes/01.Protein/run.0 prot DIAMOND $platform
+time perl 00.script/02.makeblastdb.folder.pl 01.data/05.SplitGenes/01.Protein/run.0 prot DIAMOND $platform
 wait
-time perl 00.script/02.makeblastdb.folder.pl 01.data/05.splitGenes/02.Transcript/run.0 nucl FALSE $platform
+time perl 00.script/02.makeblastdb.folder.pl 01.data/05.SplitGenes/02.Transcript/run.0 nucl FALSE $platform
 wait
 # separated paired reads and single reads
 time perl 00.script/01.folder.fastaCombinePairedEnd.pl  01.data/01.Fastq " " $platform
@@ -22,9 +22,9 @@ wait
 time perl 00.script/01.folder.IDConverter.pl 01.data/02.Fasta $mode $platform
 wait
 ## automatic run
-mkdir -p 01.data/05.splitGenes/03.Full.Length/
-:>01.data/05.splitGenes/03.Full.Length/full.length.contigs.nucl.fasta
-:>01.data/05.splitGenes/03.Full.Length/full.length.contigs.prot.fasta
+mkdir -p 01.data/05.SplitGenes/03.Full.Length/
+:>01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta
+:>01.data/05.SplitGenes/03.Full.Length/full.length.contigs.prot.fasta
 
 ###################################################l
 #: '
@@ -36,38 +36,38 @@ do
     echo "Run number: $b" >> job.monitor.txt
 
     if [ $b -eq 0 ];then
-        time perl 00.script/03.diamond.folder.pl 01.data/02.Fasta 01.data/05.splitGenes/01.Protein/run.$b 03.blast/03.bowtie.nucl/run.$b nucl bowtie.log/bowtie.run.$b $evalue $mode $platform 
+        time perl 00.script/03.diamond.folder.pl 01.data/02.Fasta 01.data/05.SplitGenes/01.Protein/run.$b 03.blast/03.bowtie.nucl/run.$b nucl bowtie.log/bowtie.run.$b $evalue $mode $platform 
         time perl 00.script/040.folder.retrievebowtie.reads.pl 03.blast/03.bowtie.nucl/run.$b 04.retrieve.reads/03.bowtie.nucl/run.$b nucl bowtie.log/bowtie.run.$b 1000 genome $mode $platform 20
         echo "Already been done"
     else
-        time perl 00.script/021.makebowtiedb.folder.pl 01.data/05.splitGenes/02.Transcript/run.$b $platform 10
-        time perl 00.script/03.bowtie.folder.pl 01.data/02.Fasta 01.data/05.splitGenes/02.Transcript/run.$b 03.blast/03.bowtie.nucl/run.$b nucl local bowtie.log/bowtie.run.$b $mode $platform 10
+        time perl 00.script/021.makebowtiedb.folder.pl 01.data/05.SplitGenes/02.Transcript/run.$b $platform 10
+        time perl 00.script/03.bowtie.folder.pl 01.data/02.Fasta 01.data/05.SplitGenes/02.Transcript/run.$b 03.blast/03.bowtie.nucl/run.$b nucl local bowtie.log/bowtie.run.$b $mode $platform 10
         time perl 00.script/04.folder.retrievebowtie.reads.pl 03.blast/03.bowtie.nucl/run.$b 04.retrieve.reads/03.bowtie.nucl/run.$b nucl bowtie.log/bowtie.run.$b $mode $platform 20
     fi
 
     time perl 00.script/06.assembly.trinity.folder.pl 04.retrieve.reads/03.bowtie.nucl/run.$b 06.assembly/03.bowtie.nucl/run.$b genome $mode $platform 20
     time perl 00.script/06.truncate.header.folder.pl 06.assembly/03.bowtie.nucl/run.$b $platform 20
-    time perl 00.script/07.blastx.back.pl 06.assembly/03.bowtie.nucl/run.$b 01.data/05.splitGenes/01.Protein/run.0 07.map.back/03.bowtie.nucl/run.$b $platform 10
-    time perl 00.script/07.blastn.back.pl 06.assembly/03.bowtie.nucl/run.$b 01.data/05.splitGenes/02.Transcript/run.0 07.map.back/02.blastn/run.$b $platform 10    
+    time perl 00.script/07.blastx.back.pl 06.assembly/03.bowtie.nucl/run.$b 01.data/05.SplitGenes/01.Protein/run.0 07.map.back/03.bowtie.nucl/run.$b $platform 10
+    time perl 00.script/07.blastn.back.pl 06.assembly/03.bowtie.nucl/run.$b 01.data/05.SplitGenes/02.Transcript/run.0 07.map.back/02.blastn/run.$b $platform 10    
 
     c=`expr $b + 1`
-    time perl 00.script/100.transfer.saturate.seq.pl 06.assembly/03.bowtie.nucl/run.$b 07.map.back/03.bowtie.nucl/run.$b 01.data/05.splitGenes/02.Transcript/run.$c 01.data/04.GeneOfInterest/GeneID.v1.txt pct 0.02 10 
-    time perl 00.script/10.folder.detect.full.length.seq.pl 07.map.back/03.bowtie.nucl/run.$b 06.assembly/03.bowtie.nucl/run.$b 01.data/05.splitGenes/01.Protein/run.0 01.data/05.splitGenes/03.Full.Length/run.$c pct 0.1
-    cat 01.data/05.splitGenes/03.Full.Length/run.$c/full.length.contigs.nucl.fasta >> 01.data/05.splitGenes/03.Full.Length/full.length.contigs.nucl.fasta
-    cat 01.data/05.splitGenes/03.Full.Length/run.$c/full.length.contigs.prot.fasta >> 01.data/05.splitGenes/03.Full.Length/full.length.contigs.prot.fasta
+    time perl 00.script/100.transfer.saturate.seq.pl 06.assembly/03.bowtie.nucl/run.$b 07.map.back/03.bowtie.nucl/run.$b 01.data/05.SplitGenes/02.Transcript/run.$c 01.data/04.GeneOfInterest/GeneID.v1.txt pct 0.02 10 
+    time perl 00.script/10.folder.detect.full.length.seq.pl 07.map.back/03.bowtie.nucl/run.$b 06.assembly/03.bowtie.nucl/run.$b 01.data/05.SplitGenes/01.Protein/run.0 01.data/05.SplitGenes/03.Full.Length/run.$c pct 0.1
+    cat 01.data/05.SplitGenes/03.Full.Length/run.$c/full.length.contigs.nucl.fasta >> 01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta
+    cat 01.data/05.SplitGenes/03.Full.Length/run.$c/full.length.contigs.prot.fasta >> 01.data/05.SplitGenes/03.Full.Length/full.length.contigs.prot.fasta
     a=`expr $a + 1`
 done
 
 
 #### summarize all runs
-grep ">" 01.data/05.splitGenes/03.Full.Length/full.length.contigs.nucl.fasta > 01.data/05.splitGenes/03.Full.Length/count1
-sed -i "s/>//" 01.data/05.splitGenes/03.Full.Length/count1
-perl 00.script/b3.full.length.format.pl 01.data/04.GeneOfInterest/GeneID.v1.txt 01.data/05.splitGenes/03.Full.Length/count1 01.data/05.splitGenes/03.Full.Length/count2 01.data/05.splitGenes/03.Full.Length/count3
+grep ">" 01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta > 01.data/05.SplitGenes/03.Full.Length/count1
+sed -i "s/>//" 01.data/05.SplitGenes/03.Full.Length/count1
+perl 00.script/b3.full.length.format.pl 01.data/04.GeneOfInterest/GeneID.v1.txt 01.data/05.SplitGenes/03.Full.Length/count1 01.data/05.SplitGenes/03.Full.Length/count2 01.data/05.SplitGenes/03.Full.Length/count3
 #'
 #### assemble unmapped reads
 mkdir -p 08.full.length
-cp 01.data/05.splitGenes/03.Full.Length/count3 08.full.length/
-cp 01.data/05.splitGenes/03.Full.Length/full.length.contigs.nucl.fasta 08.full.length/
+cp 01.data/05.SplitGenes/03.Full.Length/count3 08.full.length/
+cp 01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta 08.full.length/
 time perl 00.script/c9.get.full.length.seq.pl 08.full.length/count3 08.full.length/full.length.contigs.nucl.fasta 08.full.length/Final.v1.fasta
 
 time /usr/local/ncbiblast+/2.2.29/bin/blastx -db 01.data/00.PriorData/ptr.proteome.fa -query 08.full.length/Final.v1.fasta -out 08.full.length/Final.v1.ptr.blastx.out -evalue 1e-5 -outfmt 6 -num_threads 32 -max_target_seqs 1

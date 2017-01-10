@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# run the script: time perl 00.script/021.makebowtiedb.folder.pl 01.data/05.splitGenes/02.Transcript/run.1 Sapelo 10
+# run the script: time perl 00.script/021.makebowtiedb.folder.pl 01.data/05.SplitGenes/02.Transcript/run.1 Sapelo 10
 
 use strict;
 system("echo 'Running 021.makebowtieb.folder.pl ....' >> job.monitor.txt");

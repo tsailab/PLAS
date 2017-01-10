@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 # run the script:
-# time perl 00.script/c4.get.full.genes.pl 01.data/04.GeneOfInterest/GeneID.v2.txt 01.data/05.splitGenes/03.Full.Length 05.Trinity/full.length.contigs.fasta 08.GlobLocal.Comparison
+# time perl 00.script/c4.get.full.genes.pl 01.data/04.GeneOfInterest/GeneID.v2.txt 01.data/05.SplitGenes/03.Full.Length 05.Trinity/full.length.contigs.fasta 08.GlobLocal.Comparison
 
 use strict;
 

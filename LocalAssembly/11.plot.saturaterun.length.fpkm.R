@@ -19,8 +19,8 @@ args = commandArgs(TRUE)
 for (arg in args) cat("  ", arg, "\n", sep="")
 
 ################################################
-fullSeqFolder = "01.data/05.splitGenes/03.Full.Length/"
-allSeqFolder = "01.data/05.splitGenes/02.Transcript/"
+fullSeqFolder = "01.data/05.SplitGenes/03.Full.Length/"
+allSeqFolder = "01.data/05.SplitGenes/02.Transcript/"
 blastFolder = "07.map.back/02.blastn/"
 tgtfolder = "13.figures"
 

@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# run the script: time perl 00.script/02.makeblastdb.folder.pl 01.data/05.split/01.Protein/run.0 prot Sapelo
+# run the script: time perl 00.script/02.makeblastdb.folder.pl 01.data/05.Split/01.Protein/run.0 prot Sapelo
 
 use strict;
 system("echo 'Running 02.makeblastdb.folder.pl ....' >> job.monitor.txt");
@@ -73,5 +73,5 @@ while (not -e "flag$sub.txt") {sleep 5};
 close(SRC);
 system("echo 'Finished 02.makeblastdb.folder.pl!' >> job.monitor.txt");
 system("chmod 777 -R 00.script");
-system("chmod 777 -R 01.data/05.splitGenes");
+system("chmod 777 -R 01.data/05.SplitGenes");
 

@@ -19,7 +19,7 @@ args = commandArgs(TRUE)
 for (arg in args) cat("  ", arg, "\n", sep="")
 exprFolder = args[1] 		# "13.abundance/run.3"
 outFile = args[2]		# "13.abundance/run.3/gene.fpkm.txt"
-#geneFile = args[3]		# "01.data/05.splitGenes/02.Transcript/run.3/contig2gene.txt"
+#geneFile = args[3]		# "01.data/05.SplitGenes/02.Transcript/run.3/contig2gene.txt"
 tissueFile = args[3]		# "01.data/00.PriorData/tissue_record.txt"
 method = args[4]		# method of estimate expression
 

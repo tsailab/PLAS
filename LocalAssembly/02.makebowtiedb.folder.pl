@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# run the script: time perl 00.script/02.makebowtiedb.folder.pl 01.data/05.splitGenes/02.Transcript/run.0 Sapelo 10
+# run the script: time perl 00.script/02.makebowtiedb.folder.pl 01.data/05.SplitGenes/02.Transcript/run.0 Sapelo 10
 
 use strict;
 system("echo 'Running 02.makebowtiedb.folder.pl ....' >> job.monitor.txt");
@@ -66,4 +66,4 @@ foreach my $sub (@subs){
 close(SRC);
 system("echo 'Finished 02.makebowtiedb.folder.pl!' >> job.monitor.txt");
 system("chmod 777 -R 00.script/02.makebowtiedb.script/");
-system("chmod 777 -R 01.data/05.splitGenes");
+system("chmod 777 -R 01.data/05.SplitGenes");
