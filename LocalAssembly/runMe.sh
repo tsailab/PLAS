@@ -22,7 +22,6 @@ wait
 time perl 00.script/01.folder.IDConverter.pl 01.data/02.Fasta $mode $platform
 wait
 ## automatic run
-mkdir -p 01.data/05.SplitGenes/03.Full.Length/
 :>01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta
 :>01.data/05.SplitGenes/03.Full.Length/full.length.contigs.prot.fasta
 
@@ -65,7 +64,6 @@ sed -i "s/>//" 01.data/05.SplitGenes/03.Full.Length/count1
 perl 00.script/b3.full.length.format.pl 01.data/04.GeneOfInterest/GeneID.v1.txt 01.data/05.SplitGenes/03.Full.Length/count1 01.data/05.SplitGenes/03.Full.Length/count2 01.data/05.SplitGenes/03.Full.Length/count3
 #'
 #### assemble unmapped reads
-mkdir -p 08.full.length
 cp 01.data/05.SplitGenes/03.Full.Length/count3 08.full.length/
 cp 01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta 08.full.length/
 time perl 00.script/c9.get.full.length.seq.pl 08.full.length/count3 08.full.length/full.length.contigs.nucl.fasta 08.full.length/Final.v1.fasta
