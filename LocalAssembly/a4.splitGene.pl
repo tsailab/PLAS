@@ -21,6 +21,7 @@ my %hash = ();
 my $gene = 0;
 while (my $line = <SEQ>){
 	chomp $line;
+	$line =~ s/\s+$//g;
 	if($line =~ /^>/){
 		$gene = $line;
 		$gene =~ s/>//;
@@ -40,7 +41,6 @@ foreach my $line (<REF>){
 	chomp $line;
 	my @lines = split(/\t/, $line);
 	$line = $lines[0];
-	print "$line\n";
 	if($line eq ""){
 		$i = $i + 1;
 		close TGT;
@@ -50,11 +50,11 @@ foreach my $line (<REF>){
 		next;
 	}
 	print TGT ">$line\n";
-	#print TGT join("\n", @{$hash{$line}}), "\n";
+	print TGT join("\n", @{$hash{$line}}), "\n";
 }
 
 if(-z "$outFolder/$group/$group.fasta"){
-	system("rm -r $outFolder/$group");
+	#system("rm -r $outFolder/$group");
 }
 
 close REF;

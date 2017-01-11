@@ -43,7 +43,7 @@ foreach my $line(<SRC>){
 	#pop @temp;
 	$q = join(".", @temp);
 	@temp = split(/\./, $s);
-	pop @temp;
+	#pop @temp;
 	$s = join(".", @temp);
 	#print "$q\t$s\n";
 	
