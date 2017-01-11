@@ -19,7 +19,8 @@ wait
 
 # construct meta-group, combine ortholog groups into meta-group, each group contains 1000 genes
 #module load R/3.1.2    # this is for Sapelo
-time /usr/local/apps/R/3.1.2/bin/Rscript 00.script/a3.geneSelection.R 01.data/03.MCL/02.mcl/mcl.out.txt 01.data/04.GeneOfInterest/GeneID.txt 1000 Potri
+#Using R/3.2.0, as 3.1.2 is not available on zcluster
+time /usr/local/R/3.2.0/bin/R 00.script/a3.geneSelection.R 01.data/03.MCL/02.mcl/mcl.out.txt 01.data/04.GeneOfInterest/GeneID.txt 1000 Potri
 wait
 
 # Split gene, based on the meta-group, Split gene sequences accordingly
