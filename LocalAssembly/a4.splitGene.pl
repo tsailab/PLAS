@@ -40,6 +40,7 @@ foreach my $line (<REF>){
 	chomp $line;
 	my @lines = split(/\t/, $line);
 	$line = $lines[0];
+	print "$line\n";
 	if($line eq ""){
 		$i = $i + 1;
 		close TGT;
@@ -49,7 +50,7 @@ foreach my $line (<REF>){
 		next;
 	}
 	print TGT ">$line\n";
-	print TGT join("\n", @{$hash{$line}}), "\n";
+	#print TGT join("\n", @{$hash{$line}}), "\n";
 }
 
 if(-z "$outFolder/$group/$group.fasta"){

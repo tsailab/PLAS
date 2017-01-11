@@ -40,7 +40,7 @@ foreach my $line(<SRC>){
 	
 	## get gene id from transcript id
 	my @temp = split(/\./, $q);
-	pop @temp;
+	#pop @temp;
 	$q = join(".", @temp);
 	@temp = split(/\./, $s);
 	pop @temp;
