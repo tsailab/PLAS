@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# run the script: time perl 00.script/07.blastx.back.pl 06.assembly/03.bowtie.nucl/run.0 01.data/05.splitGenes/01.Protein/run.0 07.map.back/03.bowtie.nucl/run.0 Sapelo 10
+# run the script: time perl 00.script/07.blastx.back.pl 06.assembly/03.bowtie.nucl/run.0 01.data/05.SplitGenes/01.Protein/run.0 07.map.back/03.bowtie.nucl/run.0 Sapelo 10
 
 use strict;
 system("echo 'Running 07.blastx.back.pl ....' >> job.monitor.txt");
@@ -15,7 +15,7 @@ my $thread = 1;
 
 #=pod
 ## check if previous step has succesfully finished
-my $reffolder = "01.data/05.splitGenes/01.Protein/run.0";
+my $reffolder = "01.data/05.SplitGenes/01.Protein/run.0";
 opendir(CHK, $reffolder) or die "ERROR: Cannot open $reffolder: $!";
 my @chks = sort(grep(/^[0-9]+/, readdir(CHK)));
 #if($run == run.0){

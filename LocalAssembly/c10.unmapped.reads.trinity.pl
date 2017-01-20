@@ -5,8 +5,8 @@ use strict;
 
 my $srcfolder = shift @ARGV;
 my $platform = lc(shift @ARGV);
-my $thread = 16;
-my $memory = 160;
+my $thread = 4;
+my $memory = 20;
 
 opendir(SRC, $srcfolder) or die "ERROR: Cannot open $srcfolder: $!";
 my @subs = sort(grep(/^\w+/, readdir(SRC)));
@@ -38,13 +38,16 @@ if($platform eq "sapelo"){
 	print SHL "export LD_LIBRARY_PATH=/usr/local/gcc/4.7.1/lib:/usr/local/gcc/4.7.1/lib64:\${LD_LIBRARY_PATH}\n";
 	print SHL "export PATH=/usr/local/gmap-gsnap/latest/bin/:\${PATH}\n\n";
 	$thread = 4;
-	$memory = "80";
+	$memory = "20";
 	
 	print SHL "time /usr/local/trinity/r20140717/Trinity --seqType fa --CPU $thread --JM ",$memory,"G --left ", join(",",@left), " --right ", join(",",@right), " --output 10.unmapped.reads.trinity\n";
+	print SHL "echo You may proceed! >> FLAGFILE.txt";
 
 	close SHL;
 	system("chmod u+x $shell");
-	system("qsub -q rcc-m128-30d -pe thread $thread -l mem_total=$memory"."g $shell");
+	system("qsub -q rcc-30d -pe thread $thread -l mem_total=$memory"."g $shell");
+	while (not -e "FLAGFILE.txt") {sleep 5};
+	system("rm -f FLAGFILE.txt");
 }else{
 	die "Please provide the platform: 'Sapelo' or 'Zcluster'";
 }

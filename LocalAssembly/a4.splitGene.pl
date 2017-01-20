@@ -5,7 +5,7 @@
 ###########################################################
 
 #!/usr/bin/perl
-# run the script: time perl 00.script/a4.splitGene.pl 01.data/00.PriorData/proteome.fa 01.data/04.GeneOfInterest/GeneID.txt 01.data/05.splitGenes/01.Protein/run.0 1000
+# run the script: time perl 00.script/a4.splitGene.pl 01.data/00.PriorData/proteome.fa 01.data/04.GeneOfInterest/GeneID.txt 01.data/05.SplitGenes/01.Protein/run.0 1000
 
 use strict;
 
@@ -21,6 +21,7 @@ my %hash = ();
 my $gene = 0;
 while (my $line = <SEQ>){
 	chomp $line;
+	$line =~ s/\s+$//g;
 	if($line =~ /^>/){
 		$gene = $line;
 		$gene =~ s/>//;
@@ -53,7 +54,7 @@ foreach my $line (<REF>){
 }
 
 if(-z "$outFolder/$group/$group.fasta"){
-	system("rm -r $outFolder/$group");
+	#system("rm -r $outFolder/$group");
 }
 
 close REF;

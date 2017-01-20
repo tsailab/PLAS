@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# run the script: time perl 00.script/13.transfer.saturate.seq.pl 06.assembly/03.bowtie.nucl/run.2/01.trinity 07.map.back/03.bowtie.nucl/run.2 01.data/05.splitGenes/02.Transcript/run.100 01.data/04.GeneOfInterest/GeneID.v1.txt pct 1 10 
+# run the script: time perl 00.script/13.transfer.saturate.seq.pl 06.assembly/03.bowtie.nucl/run.2/01.trinity 07.map.back/03.bowtie.nucl/run.2 01.data/05.SplitGenes/02.Transcript/run.100 01.data/04.GeneOfInterest/GeneID.v1.txt pct 1 10 
 
 use strict;
 use Bio::SeqIO;
@@ -19,7 +19,7 @@ my $outfile = "00.script/shell.script/transfer.saturate.seq.o";
 my ($run) = $srcfolder =~ /\/(run\.[0-9]+)\//;
 
 ## check if previous step has succesfully finished
-my $reffolder = "01.data/05.splitGenes/02.Transcript/run.0";
+my $reffolder = "01.data/05.SplitGenes/02.Transcript/run.0";
 opendir(CHK, $reffolder) or die "ERROR: Cannot open $reffolder: $!";
 my @chks = sort(grep(/^[0-9]+/, readdir(CHK)));
 while(1){

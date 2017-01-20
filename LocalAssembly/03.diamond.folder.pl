@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-#running command: time perl 00.script/03.diamond.folder.pl 01.data/02.Fasta 01.data/05.splitGenes/01.Protein/run.0 03.blast/03.bowtie.nucl/run.0 nucl bowtie.log/bowtie.run.0 paired-end Sapelo
+#running command: time perl 00.script/03.diamond.folder.pl 01.data/02.Fasta 01.data/05.SplitGenes/01.Protein/run.0 03.blast/03.bowtie.nucl/run.0 nucl bowtie.log/bowtie.run.0 paired-end Sapelo
 
 use strict;
 system("echo 'Running 03.diamond.folder.pl ....' >> job.monitor.txt");

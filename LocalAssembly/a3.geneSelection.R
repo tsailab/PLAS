@@ -14,7 +14,7 @@ args = commandArgs(TRUE)
 for (arg in args) cat("  ", arg, "\n", sep="")
 groupFile = args[1] # "01.data/03.MCL/02.mcl/mcl.out.txt"
 outFile = args[2] # "01.data/04.GeneOfInterest/GeneID.txt"
-size = args[3] # 1000
+size = as.numeric(args[3]) # 1000
 sp = args[4] # "AT"
 
 ###########################################################################################
@@ -25,11 +25,13 @@ con = file(groupFile, "r", blocking = FALSE)
 data = readLines(con)
 close(con)
 
+print("Processing data")
 data.gene = lapply(data, strsplit, "\\s+")
 group = list()
 i = 0
 while(length(data.gene) > 0){
 	i = i + 1
+	print(i)
 	temp = unlist(data.gene[1])
 	temp = temp[grep(sp, temp)]
 	data.gene = data.gene[-1]
@@ -54,6 +56,8 @@ while(length(data.gene) > 0){
 ###  Write to output file. 																###
 ###########################################################################################
 
+print(length(group));
+print("write to the output");
 temp.dir = unlist(strsplit(outFile, "/"))
 outDir = paste(temp.dir[-length(temp.dir)], collapse="/")
 system(paste("mkdir -p ", outDir, sep=""))

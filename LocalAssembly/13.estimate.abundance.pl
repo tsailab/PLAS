@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# run the script: time perl 00.script/13.estimate.abundance.pl 01.data/01.Fastq 13.abundance/run.3 01.data/05.splitGenes/02.Transcript/run.3/contigs.good.fasta single-end
+# run the script: time perl 00.script/13.estimate.abundance.pl 01.data/01.Fastq 13.abundance/run.3 01.data/05.SplitGenes/02.Transcript/run.3/contigs.good.fasta single-end
 
 use strict;
 

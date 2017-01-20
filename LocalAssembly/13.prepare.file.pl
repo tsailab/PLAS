@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# run the script: time perl 00.script/13.prepare.file.pl 01.data/05.splitGenes/02.Transcript/run.3/contigs.good.fasta 01.data/05.splitGenes/02.Transcript/run.3/contig2gene.txt
+# run the script: time perl 00.script/13.prepare.file.pl 01.data/05.SplitGenes/02.Transcript/run.3/contigs.good.fasta 01.data/05.SplitGenes/02.Transcript/run.3/contig2gene.txt
 
 use strict;
 

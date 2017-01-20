@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# run the script: time perl 00.script/z2.getseq.with.geneID.pl 01.data/00.PriorData/tubulin.txt 01.data/00.PriorData/transcriptome.fa 01.data/05.splitGenes/02.Transcript/run.0/1000/1000.fasta
+# run the script: time perl 00.script/z2.getseq.with.geneID.pl 01.data/00.PriorData/tubulin.txt 01.data/00.PriorData/transcriptome.fa 01.data/05.SplitGenes/02.Transcript/run.0/1000/1000.fasta
 
 use strict;
 use Bio::SeqIO;

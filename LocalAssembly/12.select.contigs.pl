@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# run the script: time perl 00.script/10.transfer.saturate.seq.pl 06.assembly/03.bowtie.nucl/run.0/01.trinity 07.map.back/03.bowtie.nucl/run.0 01.data/05.splitGenes/02.Transcript/run.1 01.data/04.GeneOfInterest/GeneID.v1.txt 
+# run the script: time perl 00.script/10.transfer.saturate.seq.pl 06.assembly/03.bowtie.nucl/run.0/01.trinity 07.map.back/03.bowtie.nucl/run.0 01.data/05.SplitGenes/02.Transcript/run.1 01.data/04.GeneOfInterest/GeneID.v1.txt 
 
 use strict;
 use Bio::SeqIO;
