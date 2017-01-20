@@ -17,7 +17,7 @@ while(my $line = <GRP>){
 	chomp $line;
 	my @lines = split(/\s+/, $line);
 	if(not exists $group{$lines[0]}){
-		$group{$lines[0]} = $lines[5];
+		$group{$lines[0]} = $lines[4]; #Should be changed to 4? (New geneID file is five fields wide, first field becomes key, rest become attributes?
 	}
 }
 

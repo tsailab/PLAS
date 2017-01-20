@@ -19,7 +19,7 @@ wait
 
 # construct meta-group, combine ortholog groups into meta-group, each group contains 1000 genes
 module load R/3.1.2    # this is for Sapelo
-Using R/3.2.0, as 3.1.2 is not available on zcluster
+Using R/3.3.0, as 3.1.2 is not available on zcluster
 time /usr/local/R/3.3.0/bin/Rscript 00.script/a3.geneSelection.R "01.data/03.MCL/02.mcl/mcl.out.txt" "01.data/04.GeneOfInterest/GeneID.txt" 1000 "Potri"
 wait
 
@@ -30,5 +30,5 @@ time perl 00.script/a4.SplitGene.pl 01.data/00.PriorData/transcriptome.fa 01.dat
 wait
 
 # get meta-data for the meta-group, eg. gene/protein length, which group each gene belongs to
-#time perl 00.script/a5.releventInfo.pl 01.data/04.GeneOfInterest/GeneID.txt 01.data/00.PriorData/proteome.fa 01.data/00.PriorData/transcriptome.fa 01.data/00.PriorData/gene.gff3 01.data/04.GeneOfInterest/GeneID.v1.txt 1000
+time perl 00.script/a5.releventInfo.pl 01.data/04.GeneOfInterest/GeneID.txt 01.data/00.PriorData/proteome.fa 01.data/00.PriorData/transcriptome.fa 01.data/04.GeneOfInterest/GeneID.v1.txt 1000
 wait
