@@ -27,8 +27,8 @@ my @dbs = sort(grep(/^[0-9]+/, readdir(DBF)));
 system("rm -rf 00.script/$logfolder");
 system("mkdir -p 00.script/$logfolder");
 
-foreach my $db (@dbs){
-	foreach my $sub (@subs){
+foreach my $db (@dbs){		## loop over referece groups
+	foreach my $sub (@subs){	## loop over samples
 		my $shell = "00.script/$logfolder/bowtie.$seqtype.$db.$sub.sh";
 		open(SHL, ">$shell") or die "ERROR: Cannot write $shell: $!";
 		if($platform eq "sapelo"){

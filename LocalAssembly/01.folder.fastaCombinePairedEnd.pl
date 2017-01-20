@@ -17,12 +17,12 @@ system("mv 00.script/shell.script 00.script/shell.script.previous");
 system("mkdir -p 00.script/shell.script");
 
 opendir(SRC, $srcfolder) or die "ERROR: Cannot open $srcfolder: $!";
-my @subs = sort(grep(/\w+/, readdir(SRC)));
+my @subs = sort(grep(/\w+/, readdir(SRC)));		## extract sample names
 
 system("rm -f flag*");
 
 foreach my $sub (@subs){
-	if($sub =~ /F$|Fu$|R$/){
+	if($sub =~ /F$|Fu$|R$/){	## only for specific samples in 454, can be removed
 		next;
 	}
 	my $shell = "00.script/shell.script/fastaCombinePairedEnd.$sub.sh";

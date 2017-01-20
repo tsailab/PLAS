@@ -11,12 +11,12 @@ my $platform = lc(shift @ARGV);
 my $thread = 1;
 
 opendir(SRC, $srcfolder) or die "ERROR: Cannot open $srcfolder: $!";
-my @subs = sort(grep(/^[0-9]+/, readdir(SRC)));
+my @subs = sort(grep(/^[0-9]+/, readdir(SRC)));		## extract subdirectory name
 
 system("mkdir -p 00.script/shell.script");
 system("rm -f flag*");
 
-foreach my $sub (@subs){
+foreach my $sub (@subs){	## loop over each subdirectory
 	my $shell = "00.script/shell.script/makeblastdb.$sub.sh";
 	open(SHL, ">$shell") or die "ERROR: Cannot write $shell: $!";
 	if($platform eq "sapelo"){
