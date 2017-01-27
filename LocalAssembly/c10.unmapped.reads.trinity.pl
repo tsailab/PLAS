@@ -46,8 +46,8 @@ if($platform eq "sapelo"){
 	close SHL;
 	system("chmod u+x $shell");
 	system("qsub -q rcc-30d -pe thread $thread -l mem_total=$memory"."g $shell");
-	while (not -e "FLAGFILE.txt") {sleep 5};
-	system("rm -f FLAGFILE.txt");
+	while (not -e "flagfile.txt") {sleep 5};
+	system("rm -f flagfile.txt");
 }else{
 	die "Please provide the platform: 'Sapelo' or 'Zcluster'";
 }
