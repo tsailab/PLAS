@@ -1,20 +1,17 @@
 #!/bin/bash
 
-platform="Zcluster"
-mode="paired-end"
 
 ####################### this starts with proteome #######################
 ## this part only needs to be run once, it prepares and formats the data
 # WU-BLAST, construct similarity matrix for ortholog group clustering
 ## make blast database
 
-##DOESN'T EXIST ANYMORE - GET INSTALLATION SOMEHOW? BIG PROBLEM
+##GET DEPENDENCY
 /usr/local/wublast/latest/xdformat -p -o 01.data/03.MCL/01.blast/database 01.data/00.PriorData/proteome.fa
-wait
-## protein blast
+
+## protein blast, using WU-BLAST, MISSING DEPENDENCY
 # possibly figure out a way about parallelization
 /usr/local/wublast/latest/blastp 01.data/03.MCL/01.blast/database 01.data/00.PriorData/proteome.fa -o 01.data/03.MCL/01.blast/wu.blast.all.out -e 1e-5 -mformat 2 -cpus 4 -wordmask seg
-wait
 
 # mcl, cluster ortholog groups
 # convert blast output into similarity data
