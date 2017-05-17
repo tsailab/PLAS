@@ -1,0 +1,47 @@
+
+################################################################################
+### Copy read files
+cd /lustre1/lxue/RNA2016/
+mkdir 00fq
+cd 00fq
+cp   /X/*fq.gz   ./
+
+
+### merge the files in one directory if necessary
+cd /lustre1/sjq28742/RNAseq/
+for folder in sample1 sample2 
+do
+zcat $folder/*_R1_*.fastq.gz  >../"S"$folder"_1.fq"  &
+zcat $folder/*_R2_*.fastq.gz  >../"S"$folder"_2.fq"  &
+done
+
+
+
+
+################################################################################
+### count reads
+cd /lustre1/sjq28742/RNAseq/00fq
+for file in *.fq
+do
+sample=${file%.fq}  
+out=$sample"_out_num.txt"
+wc -l $file >$out   &
+done 
+
+
+### collect read number information
+cd /lustre1/lxue/RNA2016/00fq
+
+outfile="ReadNumber2.tab"
+cat *num.txt | while read line
+do 
+  a=($line)
+  num=$((${a[0]}/4))
+  printf ${a[1]}"\t"$num"\n" >>$outfile
+done
+
+
+
+
+
+

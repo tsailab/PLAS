@@ -1,0 +1,53 @@
+################################################################################
+### Read QC
+cd /lustre1/lxue/RNA2016/
+mkdir 01QC
+# change here
+workingdir=/lustre1/lxue/RNA2016/01QC 
+datadir=/lustre1/lxue/RNA2016/00fq
+
+# run to submit jobs
+dos2unix Run_FastqQC.sh
+chmod 770 Run_FastqQC.sh
+./Run_FastqQC.sh -w $workingdir -d $datadir
+cd $workingdir 
+chmod 777 Shell_master_QC.sh
+./Shell_master_QC.sh
+
+
+
+################################################################################
+## Check read format
+cd /lustre1/lxue/RNA2016/01QC
+module load perl/5.20.2
+PH=/home/lxue/database/RNAseqTools/ReadCount_Sapelo  # where the perl script is
+perl $PH/check_fastq_format.pl    ./     fastq_format.tab   ../00fq
+                          #   1 working    # 2 output  # data directory
+
+
+
+
+################################################################################
+Some files are  Phred64
+# select files with phred 64 and move to subdirectory phred64
+mkdir /lustre1/lxue/RNA2016/00fq/phred64
+move phred64 files to here to treat 33 and 64 respectively
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

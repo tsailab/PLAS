@@ -1,0 +1,53 @@
+
+cd /lustre1/lxue/RNA2016/PASA/10FUNC/db
+cp   ./
+
+
+cd /lustre1/lxue/RNA2016/PASA/10FUNC/db
+module load  ncbiblast+/2.2.29
+makeblastdb     -dbtype prot -in  uniprot_sprot.fasta -title sprot -out sprot
+makeblastdb     -dbtype prot -in  Araport11_genes.201606.pep.fasta  -title ath11 -out ath11
+makeblastdb     -dbtype prot -in  Ptrichocarpa_210_protein_primaryTranscriptOnly.fa  -title ptri3 -out ptri3
+makeblastdb     -dbtype prot -in  rice_v7_all.pep  -title rice7 -out rice7
+
+
+cd /lustre1/lxue/RNA2016/PASA/10FUNC/db
+module load perl/5.20.2
+perl submit_Sapelo_blastp_ALL.pl /lustre1/lxue/RNA2016/PASA/10FUNC/db  \
+    GCF_000495115.1_PopEup_1.0_protein.faa   Peuph_sprot  sprot 
+
+chmod 777 run_blastPeuph_sprot.sh
+./run_blastPeuph_sprot.sh
+
+
+cd /lustre1/lxue/RNA2016/PASA/10FUNC/db
+module load perl/5.20.2
+perl submit_Sapelo_blastp_ALL.pl /lustre1/lxue/RNA2016/PASA/10FUNC/db  \
+    GCF_000495115.1_PopEup_1.0_protein.faa   Peuph_ath11  ath11
+
+chmod 777 run_blastPeuph_ath11.sh
+./run_blastPeuph_ath11.sh
+
+
+cd /lustre1/lxue/RNA2016/PASA/10FUNC/db
+module load perl/5.20.2
+perl submit_Sapelo_blastp_ALL.pl /lustre1/lxue/RNA2016/PASA/10FUNC/db  \
+    GCF_000495115.1_PopEup_1.0_protein.faa   Peuph_ptri3   ptri3 
+
+chmod 777 run_blastPeuph_ptri3.sh
+./run_blastPeuph_ptri3.sh
+
+
+cd /lustre1/lxue/RNA2016/PASA/10FUNC/db
+module load perl/5.20.2
+perl submit_Sapelo_blastp_ALL.pl /lustre1/lxue/RNA2016/PASA/10FUNC/db  \
+    GCF_000495115.1_PopEup_1.0_protein.faa   Peuph_rice7  rice7
+
+chmod 777 run_blastPeuph_rice7.sh
+./run_blastPeuph_rice7.sh
+
+
+
+
+
+

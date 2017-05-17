@@ -1,0 +1,53 @@
+
+## genome
+cd /lustre1/lxue/RNA2016/Wang/05STAR
+module load java/jdk1.7.0_67
+/usr/local/apps/star/2.4.2a/bin/STAR \
+  --runThreadN 8  \
+  --runMode genomeGenerate  \
+  --genomeDir genome  \
+  --genomeChrBinNbits 15 \
+  --genomeFastaFiles GCF_000495115.1_PopEup_1.0_genomic.fna \
+  --sjdbGTFfile GCF_000495115.1_PopEup_1.0_genomic.gtf
+
+
+
+################################################################################
+### Map rnaseq reads
+###############################
+# first pass
+mismatch=4
+PA="/lustre1/lxue/RNA2016/Wang/05STAR/m"$mismatch
+mkdir $PA
+cd $PA
+master="Shell_master_STAR_P1.sh"
+printf "#"'!'/bin/bash"\n" >$master
+index=0
+for read1 in /lustre1/lxue/RNA2016/Wang/04rRNA/*R1
+do
+  sample=${read1%%_1_CA_R1}
+  read2=$sample"_2_CA_R2"
+  sampleshort=${sample##*/}
+  index=$(($index+1))
+  sh_worker="run"$index"_"$sampleshort".sh"
+  printf "qsub "$sh_worker"\n" >>$master
+  printf "#"'!'/bin/bash"\n" >$sh_worker
+  printf "#PBS -N star_p1_"$sampleshort"\n" >>$sh_worker
+  printf "#PBS -q batch\n" >>$sh_worker 
+  printf "#PBS -l nodes=1:ppn=20:AMD\n" >>$sh_worker 
+  printf "#PBS -l walltime=48:00:00\n" >>$sh_worker 
+  printf "cd "$PA"\n" >>$sh_worker 
+  printf "module load java/jdk1.7.0_67\n" >>$sh_worker  
+  printf "/usr/local/apps/star/2.4.2a/bin/STAR --runThreadN 20 --genomeDir /lustre1/lxue/RNA2016/Wang/05STAR/genome --readFilesIn \\"  >>$sh_worker  
+  printf "\n" >>$sh_worker  
+  printf $read1" "$read2"  --outSAMtype BAM Unsorted --outFilterMismatchNmax "$mismatch"  \\" >>$sh_worker  
+  printf "\n"  >>$sh_worker  
+  printf " --outFileNamePrefix $sampleshort --alignMatesGapMax 20000  --alignIntronMax 10000 \n" >>$sh_worker  
+done
+
+
+chmod 777 Shell_master_STAR_P1.sh
+./Shell_master_STAR_P1.sh
+
+
+

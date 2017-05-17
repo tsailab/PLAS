@@ -1,0 +1,27 @@
+
+
+module load perl/5.20.2
+
+cd /lustre1/lxue/RNA2016/PASA/10FUNC/PopEuph
+for file in  *.bls
+do 
+fileOnly=${file##*/}
+short=${fileOnly%%.bls}
+out=$short"_out.tab"
+perl ../parseBlast_protein_desc.pl $file $out &
+done
+
+
+
+##############################################################
+cd /lustre1/lxue/RNA2016/PASA/10FUNC
+cat ./PopEuph/Peuph_ptri*.tab > Peuph_ptri_desc_out.tab
+cat ./PopEuph/Peuph_rice*.tab > Peuph_rice_desc_out.tab
+cat ./PopEuph/Peuph_ath*.tab > Peuph_ath_desc_out.tab
+
+
+
+
+
+
+

@@ -11,7 +11,7 @@ my $platform = lc(shift @ARGV);
 my $thread = 1;
 
 ## start running the script
-system("mv fastx.fastq2fasta.* 00.script/shell.script");
+system("mv fastx.fastq2fasta.* 00.script/shell.script 2> /dev/null");
 system("rm -rf 00.script/shell.script.previous");
 system("mv 00.script/shell.script 00.script/shell.script.previous");
 system("mkdir -p 00.script/shell.script");

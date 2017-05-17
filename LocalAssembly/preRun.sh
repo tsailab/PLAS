@@ -25,15 +25,15 @@ time /usr/local/mcl/latest/bin/mcl 01.data/03.MCL/02.mcl/mcl.graph.txt --abc -o 
 wait
 
 # construct meta-group, combine ortholog groups into meta-group, each group contains 1000 genes
-module load R/3.1.2    # this is for Sapelo
+#module load R/3.1.2    # this is for Sapelo
 #Using R/3.3.0, as 3.1.2 is not available on zcluster
-time /usr/local/R/3.3.0/bin/Rscript 00.script/a3.geneSelection.R "01.data/03.MCL/02.mcl/mcl.out.txt" "01.data/04.GeneOfInterest/GeneID.txt" 1000 "Potri"
+time /usr/local/R/3.3.0/bin/Rscript 00.script/a3.geneSelection.R "01.data/03.MCL/02.mcl/mcl.out.txt" "01.data/04.GeneOfInterest.txt" 1000 "Potri"
 wait
 
 # Split gene, based on the meta-group, Split gene sequences accordingly
-time perl 00.script/a4.SplitGene.pl 01.data/00.PriorData/proteome.fa 01.data/04.GeneOfInterest/GeneID.txt 01.data/05.SplitGenes/01.Protein/run.0 1000
+time perl 00.script/a4.splitGene.pl 01.data/00.PriorData/proteome.fa 01.data/04.GeneOfInterest/GeneID.txt 01.data/05.SplitGenes/01.Protein/run.0 1000
 wait
-time perl 00.script/a4.SplitGene.pl 01.data/00.PriorData/transcriptome.fa 01.data/04.GeneOfInterest/GeneID.txt 01.data/05.SplitGenes/02.Transcript/run.0 1000
+time perl 00.script/a4.splitGene.pl 01.data/00.PriorData/transcriptome.fa 01.data/04.GeneOfInterest/GeneID.txt 01.data/05.SplitGenes/02.Transcript/run.0 1000
 wait
 
 # get meta-data for the meta-group, eg. gene/protein length, which group each gene belongs to

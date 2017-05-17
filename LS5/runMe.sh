@@ -6,9 +6,9 @@ mode="paired-end"
 ## manually run
 # construct DIAMOND and blast database for the meta-group
 time perl 00.script/02.makeblastdb.folder.pl 01.data/05.SplitGenes/01.Protein/run.0 prot DIAMOND $platform
-wait
+
 time perl 00.script/02.makeblastdb.folder.pl 01.data/05.SplitGenes/02.Transcript/run.0 nucl FALSE $platform
-wait
+
 # separated paired reads and single reads
 time perl 00.script/01.folder.fastaCombinePairedEnd.pl  01.data/01.Fastq " " $platform
 wait

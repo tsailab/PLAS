@@ -19,12 +19,13 @@ wait
 time perl 00.script/01.folder.IDConverter.pl 01.data/02.Fasta $mode $platform
 wait
 ## automatic run
+mkdir -p 01.data/05.SplitGenes/03.Full.Length/
 :>01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta
 :>01.data/05.SplitGenes/03.Full.Length/full.length.contigs.prot.fasta
 
 ###################################################l
 #: '
-a=0
+a=-1
 evalue=1e-3
 while [ $a -le 14 ]
 do

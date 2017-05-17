@@ -1,0 +1,43 @@
+################################################################################
+### 
+qsub -I  -l walltime=120:00:00 -l nodes=1:ppn=10:inter
+
+
+wdir=/lustre1/lxue/RNA2016/Wang/05STAR/htseq
+mx=m4
+cd $wdir
+master="Shell_"$mx"master_HTseq.sh"
+printf "#"'!'/bin/bash"\n" >$master
+index=0
+for bam in  ../$mx/*.bam
+do
+  sample1=${bam%%Aligned.out.bam}
+  sample=${sample1##*/} 
+  out=$sample"_"$mx"counts.txt"
+  index=$(($index+1))
+  sh_worker="run"$index"_"$sample"_"$mx".sh"
+  printf "qsub "$sh_worker"\n" >>$master
+  printf "#"'!'/bin/bash"\n" >$sh_worker
+  printf "#PBS -N HTseq_"$sample"\n" >>$sh_worker
+  printf "#PBS -q batch\n" >>$sh_worker 
+  printf "#PBS -l nodes=1:ppn=1:HIGHMEM\n" >>$sh_worker 
+  printf "#PBS -l walltime=48:00:00\n" >>$sh_worker 
+  printf "cd "$wdir"\n" >>$sh_worker 
+  printf "module load python/2.7.8\n" >>$sh_worker  
+  printf "module load htseq/0.6.1p1\n" >>$sh_worker  
+
+  printf "htseq-count   -f bam -r name -s no -a 10 -t exon -i gene_id \\"  >>$sh_worker  
+  printf "\n" >>$sh_worker  
+  printf $bam"   ../GCF_000495115.1_PopEup_1.0_genomic.gtf \\" >>$sh_worker  
+  printf "\n"  >>$sh_worker  
+  printf ">"$out  >>$sh_worker  
+done 
+chmod 777 $master
+./$master
+
+
+
+
+
+
+

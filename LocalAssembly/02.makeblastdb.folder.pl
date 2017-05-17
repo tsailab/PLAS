@@ -53,7 +53,6 @@ foreach my $sub (@subs){	## loop over each subdirectory
 	}
 	print SHL "echo You may proceed! >> FLAGFILE.txt";
 	
-	close(SHL);
 	
 	system("chmod u+x $shell");
 	if($platform eq "sapelo"){
@@ -64,7 +63,8 @@ foreach my $sub (@subs){	## loop over each subdirectory
 		die "Please provide the platform: 'Sapelo' or 'Zcluster'";
 	}
 	print SHL "echo You may proceed! >> flag$sub.txt";
-
+	
+	close(SHL);
 }
 
 foreach my $sub (@subs) {

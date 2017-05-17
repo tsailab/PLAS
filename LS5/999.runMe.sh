@@ -148,11 +148,10 @@ chmod 755 -R 00.script
 ##########TURBOTURBOTURBOTURBOTURBOTURBOTURBO############
 #########################################################
 
-a=0
+b=0
 evalue=1e-3
-while [ $a -le 14 ] #number of runs; make user configurable.
+while [ $b -le 14 ] #number of runs; make user configurable.
 do
-    let b="a+1"
     echo "Run number: $b" >> job.monitor.txt
 
     if [ $b -eq 0 ];then
@@ -180,7 +179,7 @@ do
 							if [ $mode -eq "paired-end" ]; then
 								diamond blastx -p $thread -k 1 -e $evalue -d $dbfolder/$db/$db -q $qryfolder/$sub/$sub.R1.fasta_simple.fasta -o $tgtfolder/$db/bowtie.out.$db.$sub.R1.tab
 								diamond blastx -p $thread -k 1 -e $evalue -d $dbfolder/$db/$db -q $qryfolder/$sub/$sub.R2.fasta_simple.fasta -o $tgtfolder/$db/bowtie.out.$db.$sub.R2.tab
-								if [ -f "$qryfolder/$sub/$sub.singles.fasta_simple.fasta" ]; then
+								if [ -f "$qryfolder/$sub/$sub.singles.fasta_simple.fasta" ] && [ ! -s "$qryfolder/$sub/$sub.singles.fasta_simple.fasta" ]; then
 									$WORK/bin/diamond blastx -p $thread -k 1 -e $evalue -d $dbfolder/$db/$db -q $qryfolder/$sub/$sub.singles.fasta_simple.fasta -o $tgtfolder/$db/bowtie.out.$db.$sub.single.tab
 								else
 									:> $tgtfolder/$db/bowtie.out.$db.$sub.single.tab
@@ -200,9 +199,67 @@ do
 #####derived from 040.folder.retrievebowtie.reads.pl#####
 #########################################################
 
-    perl 00.script/040.folder.retrievebowtie.reads.pl 03.blast/03.bowtie.nucl/run.$b 04.retrieve.reads/03.bowtie.nucl/run.$b nucl bowtie.log/bowtie.run.$b 1000 genome $mode 20
+srcfolder = "03.blast/03.bowtie.nucl/run.$b"
+tgtfolder = "04.retrieve.reads/03.bowtie.nucl/run.$b"
+seqtype = "nucl"
+logfolder = "bowtie.log/bowtie.run.$b"
+blocksize = "1000"
+scale = "genome"
+platform = lc(shift @ARGV)
+sleeptime = "20"
+##replace $run with $b
+thread = 1
+	
+@chks = 01.data/05.SplitGenes/01.Protein/run.0 subdirectories
+@sams = 01.data/02.fasta subdirectories
+@subs = $srcfolder subdirectories
 
-	###Need partial port of this; talk to cicy about explaining process
+
+for chk in $WORK/01.data/05.SplitGenes/01.Protein/run.0; do
+  if [ -d "$chk" ]; then
+	for sam in $work/01.data/02.fasta; do
+		if [ -d "$sam" ]; then
+				if [ -f "bowtie.$seqtype.$chk.$sam.sh.o*" && -f "bowtie.$seqtype.$chk.$sam.sh.e*" && -f "00.script/$logfolder/$chk.$sam.done.*" ]; then
+					grep -E 'ERROR|Error|error' "bowtie.$seqtype.$chk.$sam.sh.e*" >> "00.script/$logfolder/summary.error.log"
+				else
+					sleep $sleeptime
+				fi
+		fi	
+	done
+  fi
+ done
+
+	if [ !-s "00.script/$logfolder/summary.error.log" ]; then
+		echo "All jobs finished without error!" >> job.monitor.txt
+	else
+		echo "Error in retrieving bowtie reads! Check 00.script/$logfolder/summary.error.log!" >> job.monitor.txt
+		exit
+	fi
+	sleep "20"
+	
+	mv bowtie.* 00.script/$logfolder
+	chmod 777 -R 00.script/$logfolder
+	chmod 777 -R $srcfolder
+	rm -rf 00.script/04.retrieve.script/run.$b
+	mkdir -p 00.script/04.retrieve.script/run.$b
+	rm -rf $tgtfolder
+	
+	for sub in $work/03.blast/03.bowtie.nucl/run.$b; do
+		mkdir -p $tgtfolder/03.blast/03.bowtie.nucl/run.$b	
+
+		if [ $mode -eq "paired-end" ]; then	#Bash script calling perl script that makes a bash script that calls a perl script that makes a... 
+			perl 00.script/040.retrievebowtie.reads.pl $srcfolder/$sub/bowtie.out.$sub.$sam.R1.tab 01.data/02.Fasta/$sam/$sam.R1.fasta_pairs_R1.fasta $blocksize >> $tgtfolder/$sub/retrieved.$sub.R1.fasta
+			perl 00.script/040.retrievebowtie.reads.pl $srcfolder/$sub/bowtie.out.$sub.$sam.R2.tab 01.data/02.Fasta/$sam/$sam.R2.fasta_pairs_R2.fasta $blocksize >> $tgtfolder/$sub/retrieved.$sub.R2.fasta
+			perl 00.script/040.retrievebowtie.reads.pl $srcfolder/$sub/bowtie.out.$sub.$sam.single.tab 01.data/02.Fasta/$sam/$sam.R1.fasta_singles.fasta $blocksize >> $tgtfolder/$sub/retrieved.$sub.R1.fasta
+			sed -i '/^>[A-Za-z0-9_]*/s/\$/\\/1/' $tgtfolder/$sub/retrieved.$sub.R1.fasta
+			sed -i '/^>[A-Za-z0-9_]*/s/\$/\\/2/' $tgtfolder/$sub/retrieved.$sub.R2.fasta
+		elif [ $mode -eq "single-end" ]; then
+			perl 00.script/040.retrievebowtie.reads.pl $srcfolder/$sub/bowtie.out.$sub.$sam.tab 01.data/02.Fasta/$sam/$sam.fasta $blocksize >> $tgtfolder/$sub/retrieved.$sub.fasta
+		fi
+		
+	touch 00.script/04.retrieve.script/run.$b/$sub.done.log	
+	echo 'Finished 040.folder.retrievebowtie.reads.pl!' >> job.monitor.txt
+	chmod 777 -R 00.script/04.retrieve.script/run.$b
 	
 #########################################################
 ######TURBOTURBOTURBOTURBOTURBOTURBOTURBOTURBOTURBO######
@@ -213,26 +270,25 @@ do
 #########################################################	
 ##############021.makebowtiedb.folder.pl#################
 #########################################################
-	module load bowtie2	#Check dependency
+	module load bowtie2
 	
 	tgtfolder="01.data/05.SplitGenes/02.Transcript/run.$b"
 	sleeptime="10"
-	run="$b"
-	let prerun="$run-1"
+	let prerun="$b-1"
 	thread="1"
 	
-	while [ "$run" -ge 0 ]; then
+	while [ "$b" -ge 0 ]; then
 		if [ ! -f $WORK/00.script/10.transfer.script/run.$prerun/transfer.saturate.seq.log ]; then
 			sleep $sleeptime
-		elif [ -f 00.script/10.transfer.script/run.$prerun/summary.error.log ]; then
+		elif [ -s 00.script/10.transfer.script/run.$prerun/summary.error.log ]; then
 			echo "Error: Something went wrong. See 00.script/10.transfer.script/run.$prerun/summary.error.log"
 		else
 			echo "All jobs have finished successfully!" >> job.monitor.txt
 		fi
 	done
 	
-	rm -rf 00.script/02.makebowtiedb.script/run.$run
-	mkdir -p 00.script/02.makebowtiedb.script/run.$run
+	rm -rf 00.script/02.makebowtiedb.script/run.$b
+	mkdir -p 00.script/02.makebowtiedb.script/run.$b
 	chmod 755 -R $tgtfolder
 	
 	for sub in $tgtfolder; do
@@ -240,44 +296,205 @@ do
 			cd $tgtfolder/$sub
 			time bowtie2-build -f -q $sub.fasta $sub
 			cd ../../../../../
-			touch 00.script/02.makebowtiedb.script/run.$run/$sub.done.log
-			
-system("echo 'Finished 021.makeblastdb.folder.pl!' >> job.monitor.txt");			
+			touch 00.script/02.makebowtiedb.script/run.$b/$sub.done.log
+		fi
+	done
+	
+echo 'Finished 021.makeblastdb.folder.pl!' >> job.monitor.txt				
 			
 #########################################################	
 ##################03.bowtie.folder.pl####################
 #########################################################			
 			
-srcfolder="01.data/02.Fasta"
-tgtfolder="01.data/05.SplitGenes/02.Transcript/run.$b"
-seqtype="03.blast/03.bowtie.nucl/run.$b"
-logfolder="nucl"
-blocksize="local"
-scale="bowtie.log/bowtie.run.$b"
-sleeptime="10"
-thread="1"
-		##ERROR CHECKING
-		
+	qryfolder="01.data/02.Fasta"
+	dbfolder="01.data/05.SplitGenes/02.Transcript/run.$b"
+	tgtfolder="03.blast/03.bowtie.nucl/run.$b"
+	reffolder="01.data/05.SplitGenes/01.Protein/run.0"
+	seqtype="nucl"
+	logfolder="bowtie.log/bowtie.run.$b"
+	sleeptime="10"
+	run=$b
+	thread="4"
+
+	for chk in $WORK/$reffolder; do
+		if [ -d "$chk" ]; then
+			if [ -f "makebowtiedb.$chk.sh.o*" && -f "makebowtiedb.$chk.sh.e*" && -f "00.script/02.makebowtiedb.script/run.$b/$chk.done.*" ]; then
+				grep -E 'ERROR|Error|error' "makebowtiedb.$chk.sh.e*" >> "00.script/$logfolder/summary.error.log"
+			fi	
+		fi
+	done
+	
+	if [ !-s "00.script/$logfolder/summary.error.log" ]; then
+		echo "All jobs finished without error!" >> job.monitor.txt
+		for chk in $WORK/$reffolder; do
+		if [ -d "$chk" ]; then
+			if [ !-s "$dbfolder/$chk/$chk.1.bt2" || !-s "$dbfolder/$chk/$chk.rev.1.bt2" ]; then
+				echo "No output file for $chk!" >> job.monitor.txt
+			fi
+		fi
+		done
+	else
+		echo "Error in making bowtie databases! Check 00.script/$logfolder/summary.error.log!" >> job.monitor.txt
+		exit
+	fi
+	sleep "20"
+	
+	mv makebowtiedb.* 00.script/02.makebowtiedb.script/run.$b
+	chmod 777 -R 00.script/02.makebowtiedb.script/run.$b
+	chmod 777 -R $dbfolder
+	rm -rf 00.script/$logfolder
+	mkdir -p 00.script/$logfolder
+	
+	for db in "$WORK/$dbfolder"; do
+	if [ -d "$db" ]; then
+		if [ $mode -eq "Paired-end" ]; then
+			time bowtie2 -f -x $dbfolder/$db/$db $unmap -p $thread --local -1 "$qryfolder/$sub/$sub.R1.fasta_pairs_R1.fasta" -2 "$qryfolder/$sub/$sub.R2.fasta_pairs_R2.fasta" -U "$qryfolder/$sub/$sub.R1.fasta_singles.fasta" -S $tgtfolder/$db/bowtie.out.$db.sam
+		elif [ $mode -q "Single-end" ]; then
+			time bowtie2 -f -x $dbfolder/$db/$db $unmap -p $thread --local -U "$qryfolder/$sub/$sub.R1.fasta_pairs_R1.fasta" -S $tgtfolder/$db/bowtie.out.$db.sam
+		else
+			echo "No read mode selected!" >> job.monitor.txt
+			exit
+		fi
+	
+	touch "00.script/$logfolder/$db.done.log"
+	fi
+	done
+	
+	echo 'Finished 03.bowtie.folder.pl!' >> job.monitor.txt
+	chmod 777 -R 00.script/$logfolder
+	
 #########################################################	
-###########04.folder.retrievebowtie.reads.pl#############
+###########04.folder.retrievebowtie.reads.pl#############	##Remember to replace "run" with "b"
 #########################################################		
 
-        time perl 00.script/04.folder.retrievebowtie.reads.pl 03.blast/03.bowtie.nucl/run.$b 04.retrieve.reads/03.bowtie.nucl/run.$b nucl bowtie.log/bowtie.run.$b $mode $platform 20
-		##ERROR CHECKING
+srcfolder="03.blast/03.bowtie.nucl/run.$b"
+tgtfolder="04.retrieve.reads/03.bowtie.nucl/run.$b"
+seqtype="nucl"
+logfolder="bowtie.log/bowtie.run.$b"
+sleeptime="20"
+unmap="map"
+if [ $b -eq "0" ]; then
+	unmap="both"
+fi
+#ERROR CHECKING
+
+mv bowtie.* 00.script/$logfolder
+chmod 777 -R 00.script/$logfolder
+chmod 777 -R $srcfolder
+
+rm -rf 00.script/04.retrieve.script/run.$run
+mkdir -p 00.script/04.retrieve.script/run.$run
+
+for sub in $WORK/$srcfolder; do
+	if [ -d "$sub" ]; then
+		mkdir -p $tgtfolder/$sub\n
+		
+		if [ $mode -eq "paired-end" ]; then
+			perl 00.script/04.retrievebowtie.reads.pl $srcfolder/$sub/bowtie.out.$sub.sam $unmap $tgtfolder/$sub/retrieved.$sub.R1.fasta $tgtfolder/$sub/unmap.$sub.R1.fasta $tgtfolder/$sub/retrieved.$sub.R2.fasta $tgtfolder/$sub/unmap.$sub.R2.fasta
+		elif [ $mode -eq "single-end" ]; then
+			perl 00.script/04.retrievebowtie.reads.pl $srcfolder/$sub/bowtie.out.$sub.sam $unmap $tgtfolder/$sub/retrieved.$sub.fasta $tgtfolder/$sub/unmap.$sub.R1.fasta
+		else	
+			echo "Error, specify read mode" >> job.monitor.text
+			exit
+		fi
+		
+		if [ -e "$srcfolder/$sub/bowtie.out.$sub.long.sam" && -s "$srcfolder/$sub/bowtie.out.$sub.long.sam" ]; then	##Check this comparison
+			perl 00.script/04.retrievebowtie.reads.pl $srcfolder/$sub/bowtie.out.$sub.long.sam $unmap $tgtfolder/$sub/retrieved.$sub.long.fasta $tgtfolder/$sub/unmap.$sub.long.fasta
+		fi
+		touch 00.script/04.retrieve.script/run.$run/$sub.done.log
+	fi
+done
+
+echo 'Finished 04.folder.retrievebowtie.reads.pl!' >> job.monitor.txt
+chmod 777 -R 00.script/04.retrieve.script/run.$run
+
 	
-	
+#########################################################	
+###########END OF TURBOTURBOTURBOTURBOTURBO$#############
+#########################################################	
+
 	fi
 	
-########################CONSTRUCTION LINE#######################	
-	time perl 00.script/06.assembly.trinity.folder.pl 04.retrieve.reads/03.bowtie.nucl/run.$b 06.assembly/03.bowtie.nucl/run.$b genome $mode $platform 20
-	##ERROR CHECKING
+#########################################################	
+#############06.assembly.trinity.folder.pl###############
+#########################################################
 	
-    time perl 00.script/06.truncate.header.folder.pl 06.assembly/03.bowtie.nucl/run.$b $platform 20
-    ##ERROR CHECKING
-	time perl 00.script/07.blastx.back.pl 06.assembly/03.bowtie.nucl/run.$b 01.data/05.SplitGenes/01.Protein/run.0 07.map.back/03.bowtie.nucl/run.$b $platform 10
-    ##ERROR CHECKING
-	time perl 00.script/07.blastn.back.pl 06.assembly/03.bowtie.nucl/run.$b 01.data/05.SplitGenes/02.Transcript/run.0 07.map.back/02.blastn/run.$b $platform 10    
-	##ERROR CHECKING
+04.retrieve.reads/03.bowtie.nucl/run.$b 
+06.assembly/03.bowtie.nucl/run.$b 
+genome 
+$mode 
+$platform 
+20
+
+#########################################################	
+##############06.truncate.header.folder.pl###############
+#########################################################
+	
+06.assembly/03.bowtie.nucl/run.$b 
+$platform 
+20
+
+	
+#########################################################	
+###################07.blastx.back.pl#####################
+#########################################################
+echo 'Running 07.blastx.back.pl ....' >> job.monitor.txt
+module load blast
+srcfolder="06.assembly/03.bowtie.nucl/run.$b"
+dbfolder="01.data/05.SplitGenes/01.Protein/run.0"
+tgtfolder="07.map.back/03.bowtie.nucl/run.$b"
+reffolder="01.data/05.SplitGenes/01.Protein/run.0"
+thread="1"
+
+###ERROR CHECKING
+
+mv truncate.header.* 00.script/06.truncate.script/run.$run
+chmod 777 -R 00.script/06.truncate.script/run.$run
+chmod 777 -R $srcfolder
+rm -rf 00.script/07.blastx.script/run.$run
+mkdir -p 00.script/07.blastx.script/run.$run
+
+for sub in "$WORK/$srcfolder"; do
+	if [ -d "$sub" ]; then
+		mkdir -p $tgtfolder/$sub
+		blastx -db $dbfolder/$sub/$sub.fasta -query $srcfolder/$sub/Trinity.new.fasta -out $tgtfolder/$sub/$sub.contigs.blast.out -evalue 1e-5  -outfmt 6 -num_threads 1 -max_target_seqs 1
+		blastx -db $dbfolder/$sub/$sub.fasta -query $srcfolder/$sub/Trinity.new.fasta -out $tgtfolder/$sub/$sub.contigs.blast.xml.out -evalue 1e-5  -outfmt 5 -num_threads 1 -max_target_seqs 1
+		touch 00.script/07.blastx.script/run.$run/$sub.done.log
+		
+		
+		
+	fi
+done
+
+echo 'Finished 07.blastx.back.pl!' >> job.monitor.txt
+chmod 777 -R 00.script/07.blastx.script/run.$run
+
+#########################################################	
+###################07.blastn.back.pl#####################
+#########################################################
+
+echo 'Running 07.blastx.back.pl ....' >> job.monitor.txt
+
+srcfolder="06.assembly/03.bowtie.nucl/run.$b"
+dbfolder="01.data/05.SplitGenes/02.Transcript/run.0"
+tgtfolder="07.map.back/02.blastn/run.$b"
+thread="1"
+
+###ERROR CHECKING
+
+rm -rf 00.script/07.blastn.script/run.$run
+mkdir -p 00.script/07.blastn.script/run.$run
+
+for sub in "$WORK/$srcfolder"; do
+	if [ -d "$sub" ]; then
+		blastn -db $dbfolder/$sub/$sub.fasta -query $srcfolder/$sub/Trinity.new.fasta -out $tgtfolder/$sub/$sub.contigs.blast.out -evalue 1e-10  -outfmt 6 -num_threads 1 -max_target_seqs 1
+		blastn -db $dbfolder/$sub/$sub.fasta -query $srcfolder/$sub/Trinity.new.fasta -out $tgtfolder/$sub/$sub.contigs.blast.xml.out -evalue 1e-10  -outfmt 5 -num_threads 1 -max_target_seqs 1
+	fi
+done
+
+echo 'Finished 07.blastx.back.pl!' >> job.monitor.txt
+chmod 777 -R 00.script/07.blastn.script/run.$run
+
     c=`expr $b + 1`
 
     time perl 00.script/100.transfer.saturate.seq.pl 06.assembly/03.bowtie.nucl/run.$b 07.map.back/03.bowtie.nucl/run.$b 01.data/05.SplitGenes/02.Transcript/run.$c 01.data/04.GeneOfInterest/GeneID.v1.txt pct 0.02 10 

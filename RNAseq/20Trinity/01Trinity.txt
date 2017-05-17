@@ -1,0 +1,4 @@
+
+cd /lustre1/lxue/RNA2016/ShanmuEMB/04Trinity
+perl Submit_Trinity_folder_Sapelo.pl /lustre1/lxue/RNA2016/04Trinity  /lustre1/lxue/RNA2016/04Trinity
+qsub 

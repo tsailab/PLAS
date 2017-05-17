@@ -1,0 +1,73 @@
+################################################################################
+### Trim reads  Phred 33
+cd /lustre1/lxue/RNA2016/
+mkdir cut
+# change here
+workingdir=/lustre1/lxue/RNA2016/01cut
+datadir=/lustre1/lxue/RNA2016/00fq
+
+# run to submit jobs
+sh_string="Run_Trim_P33.sh"
+dos2unix $sh_string
+chmod 770 $sh_string
+./$sh_string -w $workingdir -d $datadir
+cd $workingdir 
+chmod 777 Shell_master_Trim33.sh
+./Shell_master_Trim33.sh
+
+
+########################################################
+### Trim reads  Phred 64
+cd /lustre1/lxue/RNA2016
+# change here
+workingdir=/lustre1/lxue/RNA2016/02cut
+datadir=/lustre1/lxue/RNA2016/00fq/phred64
+
+# run to submit jobs
+sh_string="Run_Trim_P64.sh"
+dos2unix $sh_string
+chmod 770 $sh_string
+./$sh_string -w $workingdir -d $datadir
+cd $workingdir 
+chmod 777 Shell_master_Trim64.sh
+./Shell_master_Trim64.sh
+
+
+######################################################################################
+## compare with rRNA and filter them
+
+cut_dir=/lustre1/lxue/RNA2016/02cut
+rRNA_dir=/lustre1/lxue/RNA2016/03rRNA
+
+# get the codes
+cd $rRNA_dir
+cp /home/lxue/database/RNAseqTools/Read_PrepareSapelo/*.pl ./
+
+# map agianst rRNA
+cd $rRNA_dir
+perl Folder_submit_rRNAonly_Sapelo.pl  $rRNA_dir $cut_dir
+chmod 777 run_all_blat.sh
+./run_all_blat.sh
+
+# filter rRNA
+cd $rRNA_dir
+perl Folder_submit_read_prepare_rRNA_Sapelo.pl  $rRNA_dir   $cut_dir
+chmod 777 run_all_prepare.sh
+./run_all_prepare.sh
+
+
+cd $rRNA_dir
+perl all2one_MARKER_sum.pl  ./  ShanmuEMB_rRNA_hit.tab  &
+
+
+
+
+
+
+
+
+
+
+
+
+
