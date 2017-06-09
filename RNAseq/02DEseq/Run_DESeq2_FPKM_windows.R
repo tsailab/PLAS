@@ -1,8 +1,8 @@
-setwd("F:\\Projects\\Wang\\Trees\\02DEseq")
-file_all = c("Tree_design.txt")
+setwd("C:\\Users\\Shawn\\Documents\\GitHub\\Scripts\\RNAseq\\02DEseq")
+file_all = c("Tree_design.txt") ##Figure this out
 
-data_dir = "F:\\Projects\\Wang\\Trees\\02DEseq\\data"
-gtf_file = "GCF_000495115.1_PopEup_1.0_genomic.gtf"
+data_dir = "C:\\Users\\Shawn\\Documents\\GitHub\\Scripts\\RNAseq\\02DEseq"
+gtf_file = "PdeltoidesWV94_445.gtf" ##Figure this out
 
 library(Biostrings)
 library(IRanges)
@@ -76,7 +76,7 @@ DESeqDataSetFromHTSeqCount_lxue = function (sampleTable, directory = "", design,
 xxx=strsplit(design_file,"\\_")[[1]]
 tissue = xxx[length(xxx)]
 
-tissue = "tree"
+tissue = "pollen"
 #########################################################
 ## Multiple factors
 

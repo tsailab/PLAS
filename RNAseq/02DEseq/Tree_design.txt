@@ -1,9 +1,4 @@
 sample_id	File	Mismatch	Sample
-100YA_m2	100YA_m2counts.txt	m2	100Y
-100YB_m2	100YB_m2counts.txt	m2	100Y
-100YC_m2	100YC_m2counts.txt	m2	100Y
-10YB_m2	10YB_m2counts.txt	m2	10Y
-10YC_m2	10YC_m2counts.txt	m2	10Y
-300YA_m2	300YA_m2counts.txt	m2	300Y
-300YB_m2	300YB_m2counts.txt	m2	300Y
-300YC_m2	300YC_m2counts.txt	m2	300Y
+Pdel_P1	P1_m3counts.txt	m3	P1
+Pdel_P4	P4_m3counts.txt	m3	P4
+
