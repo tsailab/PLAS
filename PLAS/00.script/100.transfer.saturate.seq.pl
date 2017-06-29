@@ -165,9 +165,6 @@ close TGT2;
 close ERR;
 close OUT;
 
-system("grep -E 'ERROR|Error|error' 00.script/10.transfer.script/run.$run/transfer.saturate.seq.e > 00.script/10.transfer.script/run.$run/summary.error.log");
-system("echo 'success' > 00.script/10.transfer.script/run.$run/transfer.saturate.seq.log");
-
 system("echo 'Finished 10.transfer.saturate.seq.pl!' >> job.monitor.txt");
 
 ########################

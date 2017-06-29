@@ -31,8 +31,6 @@ foreach my $sub(@subs){
 	system("cat $tgtfolder/$sub/$sub.full.length.contigs.prot.fasta >> $tgtfolder/full.length.contigs.prot.fasta");
 }
 
-system("grep -E 'ERROR|Error|error' 00.script/shell.script/transfer.saturate.seq.e > 00.script/shell.script/summary.error.log");
-system("echo 'success' > 00.script/shell.script/transfer.saturate.seq.log");
 
 system("echo 'Finished 10.transfer.saturate.seq.pl!' >> job.monitor.txt");
 

@@ -53,6 +53,7 @@ time Rscript 00.script/a3.geneSelection.R 01.data/03.MCL/02.mcl/mcl.out.txt 01.d
 error_check "R failed us! Check preRun.sh line 53"
 wait
 
+awk '{print} NR % 1000 == 0 {print ""}' 01.data/04.GeneOfInterest/GeneID.txt >> tmp && mv tmp 01.data/04.GeneOfInterest/GeneID.txt
 # Split gene, based on the meta-group, Split gene sequences accordingly
 echo "Running splitGene on protein"
 time perl 00.script/a4.splitGene.pl 01.data/00.PriorData/proteome.fa 01.data/04.GeneOfInterest/GeneID.txt 01.data/05.SplitGenes/01.Protein/run.0 1000

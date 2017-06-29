@@ -11,7 +11,7 @@ library(DESeq2)
 
 gtf2GRangesList <- function(myfile="my.gff") {
 	gtf <- read.delim(myfile, header=FALSE)
-	colnames(gtf) <- c("seqname", "source", "feature", "start", "end", "score", "strand", "frame",      
+	colnames(gtf) <- c ("seqname", "source", "feature", "start", "end", "score", "strand", "frame",      
 			"attributes")
 	#chronly <- c(1:22, "X", "Y", "MT")
 	#gtf <- gtf[as.character(gtf$seqname) %in% chronly, ] # Cleanup to remove non-chromosome rows

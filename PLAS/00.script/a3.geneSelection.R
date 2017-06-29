@@ -67,9 +67,9 @@ system(paste(":> ", outFile))
 
 for(i in 1:length(group)){
 	write(group[[i]], file=outFile, sep="\n", append=TRUE)
-	if(i < length(group)){
-		write("", file=outFile, append=TRUE)	## write an extra blank line to separate groups
-	}
+	#if(i < length(group)){				###HERE!###
+	#	write("", file=outFile, append=TRUE)	## write an extra blank line to separate groups
+	#}
 }
 
 ###########################################################################################

@@ -4,7 +4,7 @@
 #SBATCH -N 1
 #SBATCH -n 24
 #SBATCH -p normal
-#SBATCH -t 02:00:00
+#SBATCH -t 04:00:00
 
 #SBATCH --mail-user=sjq28742@uga.edu
 #SBATCH --mail-type=begin
@@ -15,23 +15,30 @@ module load trinityrnaseq
 ##
 
 mode="paired-end"
-b="0"
+b="3"
 echo "Initial value: $b" >> checkit.txt
 evalue=1e-3
 touch job.monitor.txt
 chmod 755 job.monitor.txt
 
+error_check() {
+        if [[ $? -ne 0 ]]; then
+        echo "$1" >> job.monitor.txt
+        exit $?
+        fi
+return 0
+}
+
 while [ $b -le 3 ]; do #number of runs; make user configurable.
    
     echo "Run number: $b" >> job.monitor.txt
-
 if [ $b -gt "0" ]; then
     tgtfolder="01.data/05.SplitGenes/02.Transcript/run.$b"
     sleeptime="10"
     let prerun="$b-1"
     thread="24"
     module load bowtie/2.2.6
-
+    mkdir $tgtfolder
     chmod 755 -R $tgtfolder        
         
 	for sub in $tgtfolder/*; do
@@ -44,8 +51,8 @@ if [ $b -gt "0" ]; then
         done
 
 	echo "Finished 021.makebowtiedb.folder.pl!" >> job.monitor.txt
-################
 
+################
     qryfolder="01.data/02.Fasta"
     dbfolder="01.data/05.SplitGenes/02.Transcript/run.$b"
     tgtfolder="03.blast/03.bowtie.nucl/run.$b"
@@ -53,9 +60,14 @@ if [ $b -gt "0" ]; then
     seqtype="nucl"
     logfolder="bowtie.log/bowtie.run.$b"
     thread="24"
+    R1=()
+    R2=()
+    R3=()
+    str2=""
+    str3=""
 
-    
-	for chk in $WORK/$reffolder/*; do
+   	mkdir $tgtfolder 
+	for chk in $reffolder/*; do
                 if [ -d "$chk" ]; then
 		chk=$(basename ${chk})
                         if [[ ! -s "$dbfolder/$chk/$chk.1.bt2" || ! -s "$dbfolder/$chk/$chk.rev.1.bt2" ]]; then
@@ -64,21 +76,76 @@ if [ $b -gt "0" ]; then
                 fi
     done
 
-    chmod 777 -R $dbfolder
+    #chmod 777 -R $dbfolder
 
-    for db in $WORK/$dbfolder/*; do
+    for db in $dbfolder/*; do
         if [ -d "$db" ]; then
 	    db=$(basename ${db})
-		mkdir -p $tgtfolder/$sub		
-                if [ $mode == "Paired-end" ]; then
-                        time bowtie2 -f -x $dbfolder/$db/$db $unmap -p $thread --local -1 "$qryfolder/$sub/$sub.R1.fasta_pairs_R1.fasta" -2 "$qryfolder/$sub/$sub.R2.fasta_pairs_R2.fasta" -U "$qryfolder/$sub/$sub.R1.fasta_singles.fasta" -S $tgtfolder/$db/bowtie.out.$db.sam
-                elif [ $mode == "Single-end" ]; then
-                        time bowtie2 -f -x $dbfolder/$db/$db $unmap -p $thread --local -U "$qryfolder/$sub/$sub.R1.fasta_pairs_R1.fasta" -S $tgtfolder/$db/bowtie.out.$db.sam
+		mkdir -p $tgtfolder/$db
+
+		if [ "$mode" == "paired-end" ]; then
+		##Construct R1 input string
+			str1=""
+			R1=()
+			for sub in $qryfolder/*; do cd $sub
+				for item in ./*"R1"."fasta"; do [ -f "$item" ] || continue
+				item=$(basename ${item}); R1+=("$sub/$item")
+				done; cd ../../../
+			done
+
+			for elem in "${R1[@]}"; do str1="$str1,$elem"; 
+			done
+			str1=${str1#?}
+			
+		##Construct R2 input string
+                        str2=""
+			R2=()
+			for sub in $qryfolder/*; do cd $sub
+                                for item in ./*"R2"."fasta"; do [ -f "$item" ] || continue
+                                item=$(basename ${item}); R2+=("$sub/$item")
+                                done; cd ../../../
+                        done
+
+                        for elem in "${R2[@]}"; do str2="$str2,$elem";
+                        done
+                        str2=${str2#?}
+		
+		##Construct singles input string
+                        str3=""
+			R3=()
+			for sub in $qryfolder/*; do cd $sub
+                                for item in ./*"singles"."fasta"; do [ -f "$item" ] || continue
+                                item=$(basename ${item}); R3+=("$sub/$item")
+                                done; cd ../../../
+                        done
+
+                        for elem in "${R3[@]}"; do str3="$str3,$elem";
+                        done
+                        str3=${str3#?}
+							#-unmap
+			time bowtie2 -f -x $dbfolder/$db/$db -p $thread --local -1 "$str1" -2 "$str2" -S $tgtfolder/$db/bowtie.out.$db.sam
+       
+
+	         elif [ "$mode" == "Single-end" ]; then
+		##Construct R1 input string
+                        str1=""
+			R1=()
+			for sub in $qryfolder/*; do cd $sub
+                                for item in ./*"R1"."fasta"; do [ -f "$item" ] || continue
+                                item=$(basename ${item}); R1+=("$sub/$item")
+                                done; cd ../../../
+                        done
+
+                        for elem in "${R1[@]}"; do str1="$str1,$elem";
+                        done
+                        str1=${str1#?}
+							#$unmap
+                        time bowtie2 -f -x $dbfolder/$db/$db -p $thread --local -U "$str1" -S $tgtfolder/$db/bowtie.out.$db.sam
                 else
                         echo "No read mode selected!" >> job.monitor.txt
                         exit
                 fi
-		fi
+	fi
     done
 
     echo 'Finished 03.bowtie.folder.pl!' >> job.monitor.txt
@@ -92,22 +159,23 @@ if [ $b -gt "0" ]; then
 	sleeptime="20"
 	unmap="map"
 	if [ $b -eq "0" ]; then
-		unmap="both"
+		echo "Somethin screwy going on here" >> job.monitor.txt
+		exit
 	fi
-
+	mkdir $tgtfolder	
 	chmod 777 -R $srcfolder
 
-	for sub in $WORK/$srcfolder/*; do
+	for sub in $srcfolder/*; do
 		if [ -d "$sub" ]; then
 		sub=$(basename ${sub})
             mkdir -p $tgtfolder/$sub
-
-			if [ $mode -eq "paired-end" ]; then
+			if [ "$mode" == "paired-end" ]; then
 				perl 00.script/04.retrievebowtie.reads.pl $srcfolder/$sub/bowtie.out.$sub.sam $unmap $tgtfolder/$sub/retrieved.$sub.R1.fasta $tgtfolder/$sub/unmap.$sub.R1.fasta $tgtfolder/$sub/retrieved.$sub.R2.fasta $tgtfolder/$sub/unmap.$sub.R2.fasta
-			elif [ $mode -eq "single-end" ]; then                        
+				error_check "Bowtie broke at $sub"
+			elif [ "$mode" == "single-end" ]; then                        
 				perl 00.script/04.retrievebowtie.reads.pl $srcfolder/$sub/bowtie.out.$sub.sam $unmap $tgtfolder/$sub/retrieved.$sub.fasta $tgtfolder/$sub/unmap.$sub.R1.fasta
 			else
-				echo "Error, specify read mode" >> job.monitor.text
+				echo "Error, specify read mode" >> job.monitor.txt
 				exit
             fi
 			touch "00.script/04.retrieve.script/run.$run/$sub.done.log"
@@ -129,8 +197,6 @@ chmod 777 trinity.runMe.sh
 for sub in $srcfolder/*; do
 	if [ -d "$sub" ]; then
 	sub=$(basename ${sub})
-		echo "Trinity memory available at $sub: " >> job.monitor.txt
-		grep MemTotal /proc/meminfo | awk '{print $2' >> job.monitor.txt	
 		./trinity.runMe.sh "$b" "$sub"
 	fi
 done

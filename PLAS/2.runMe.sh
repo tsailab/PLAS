@@ -1,14 +1,4 @@
 #!/bin/bash
-#sBATCH -J PLAS_runMe2
-#SBATCH -o PLAS_runMe2.o%j
-#SBATCH -N 1
-#SBATCH -n 48
-#SBATCH -p normal
-#SBATCH -t 01:00:00
-
-#SBATCH --mail-user=sjq28742@uga.edu
-#SBATCH --mail-type=begin
-#SBATCH --mail-type=end
 
 ##Additional work; check mode based on input files
 mode="paired-end"
