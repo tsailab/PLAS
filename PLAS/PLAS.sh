@@ -1,11 +1,11 @@
 #PBS -S /bin/bash
 #PBS -q batch
 #PBS -N Master_PLAS
-#PBS -l nodes=1:ppn=2:HIGHMEM
-#PBS -l walltime=04:00:00
-#PBS -l mem=10gb
+#PBS -l nodes=1:ppn=12:HIGHMEM
+#PBS -l walltime=12:00:00
+#PBS -l mem=50gb
 cd $PBS_O_WORKDIR
-repeats=10
+repeats=5
 counter=0
 WAIT1=""
 WAIT2=""

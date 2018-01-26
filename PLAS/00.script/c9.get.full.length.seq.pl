@@ -17,7 +17,7 @@ foreach my $line (<REF>){
 	if(not exists $hash{$run}{$gene}{$contig}){
 		$hash{$run}{$gene}{$contig} = 0;
 	}else{
-		die "Something unexpected occured in c9.get.full.length.seq.\n";
+	#	die "Something unexpected occured in c9.get.full.length.seq.\n";
 	}
 }
 close REF;

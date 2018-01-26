@@ -7,7 +7,6 @@ run=${RUN}
 let c=$run+1
 cd $PBS_O_WORKDIR
 
-mkdir 07.map.back/03.bowtie.nucl/run.$run
 mkdir 01.data/05.SplitGenes/03.Full.Length/run.$c
 module load perl/5.20.2-thread
 #######################################

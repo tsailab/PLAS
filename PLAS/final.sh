@@ -9,8 +9,13 @@ module load ncbiblast+
 module load perl/5.20.2-thread
 
 ##Summarize all runs
+# Retrieve header metadata from full length contig list
 grep ">" 01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta > 01.data/05.SplitGenes/03.Full.Length/count1
+
+# Remove ">" from entries
 sed -i "s/>//" 01.data/05.SplitGenes/03.Full.Length/count1
+
+# Reformat ???
 perl 00.script/b3.full.length.format.pl 01.data/04.GeneOfInterest/GeneID.v1.txt 01.data/05.SplitGenes/03.Full.Length/count1 01.data/05.SplitGenes/03.Full.Length/count2 01.data/05.SplitGenes/03.Full.Length/count3
 
 #### assemble unmapped reads

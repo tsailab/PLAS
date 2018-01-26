@@ -24,12 +24,13 @@ module load R
 module load diamond
 module load python/2.7.8
 # ncbi blast to create protein databases
+
 makeblastdb -in 01.data/00.PriorData/proteome.fa -dbtype prot
 error_check "Failed to make blast db, check preRun.sh line 31"
 
 # protein blast
 echo "Running blastp"
-time blastp -num_threads 24 -db 01.data/00.PriorData/proteome.fa -query 01.data/00.PriorData/proteome.fa -out 01.data/03.MCL/01.blast/blast.all.out -evalue 1e-5 -outfmt 6
+time blastp -num_threads 12 -db 01.data/00.PriorData/proteome.fa -query 01.data/00.PriorData/proteome.fa -out 01.data/03.MCL/01.blast/blast.all.out -evalue 1e-5 -outfmt 6
 error_check "Failed protein blast, check preRun.sh line 36"
 
 # mcl, cluster ortholog groups
@@ -50,6 +51,7 @@ error_check "R failed us! Check preRun.sh line 54"
 
 awk '{print} NR % 1000 == 0 {print ""}' 01.data/04.GeneOfInterest/GeneID.txt >> tmp && mv tmp 01.data/04.GeneOfInterest/GeneID.txt
 error_check "AWK failed us! Check preRun.sh line 58"
+
 # Split gene, based on the meta-group, Split gene sequences accordingly
 echo "Running splitGene on protein"
 time perl 00.script/a4.splitGene.pl 01.data/00.PriorData/proteome.fa 01.data/04.GeneOfInterest/GeneID.txt 01.data/05.SplitGenes/01.Protein/run.0 1000
@@ -73,7 +75,6 @@ echo 'Separating paired-end and single reads...' >> $logfolder/job.monitor_preRu
 for sam in 01.data/01.Fastq/*; do
   if [ -d $sam ]; then
 	sam=$(basename ${sam})
-        echo 'Running paired end script for $sam' >> $logfolder/job.monitor_preRun.txt
         time python2.7 00.script/01.fastaCombinePairedEnd.py 01.data/01.Fastq/$sam/$sam.R1.fastq 01.data/01.Fastq/$sam/$sam.R2.fastq " "
   fi
 done

@@ -7,22 +7,22 @@ my $idfile = shift @ARGV;
 my $out1 = shift @ARGV;
 my $out2 = shift @ARGV;
 
-open(GENE_ID, $idfile);
-open(COUNT1, $groupfile);
+open(GENE_ID, $groupfile);
+open(COUNT1, $idfile);
 open(COUNT2, ">$out1");
 open(COUNT3, ">$out2");
 
 my %group = ();
-while(my $line = <COUNT1>){
+while(my $line = <GENE_ID>){
 	chomp $line;
 	my @lines = split(/\s+/, $line);
 	if(not exists $group{$lines[0]}){
-		$group{$lines[0]} = $lines[2]; #Should be changed to 4? (New geneID file is five fields wide, first field becomes key, rest become attributes?
+		$group{$lines[0]} = $lines[4];
 	}
 }
 
 my %hash = ();
-foreach my $line (<GENE_ID>){
+foreach my $line (<COUNT1>){
     chomp $line;
     my @lines = split(/\s+/, $line);
 	my $qname = $lines[0];
@@ -47,6 +47,7 @@ foreach my $line (<GENE_ID>){
 			
 			## open old run blast file
 			open(BLT1, "07.map.back/03.bowtie.nucl/run.$oldrun/$gr/$gr.contigs.blast.out");
+			print("Tried to open 07.map.back/03.bowtie.nucl/run.$oldrun/$gr/$gr.contigs.blast.out\n\n");
 			my $oldbits = 0;
 			my $oldmismatch = 0;
 			my $oldlen = 0;

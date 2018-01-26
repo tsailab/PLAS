@@ -76,7 +76,7 @@ push @{$hash{$pre}}, $len;
 push @{$hash{$pre}}, $gc/$len*100;		## get the GC content output
 
 ## write to output file
-print TGT "Gene_ID\tProtein_len\tGroup_ID\n";	# make the header
+print TGT "Gene_ID\tProtein_len\tNucl_len\tGC_content\tGroup_ID\n";	# make the header
 open(REF, $reffile);
 my $i = 1;
 my $group = 0;
