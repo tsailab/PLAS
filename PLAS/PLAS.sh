@@ -9,6 +9,9 @@ repeats=5
 counter=0
 WAIT1=""
 WAIT2=""
+WAIT3=""
+WAIT4=""
+
 ./preRun.sh
 
 for sub in 01.data/05.SplitGenes/01.Protein/run.0/*; do 
@@ -33,5 +36,16 @@ WAIT1=$(qsub -W depend=afterok:$WAIT2 -N PLASA_${counter} -v RUN=$counter, assem
 	let counter=$counter+1
 done
 
-qsub -W depend=afterok:$WAIT1 -N PLAS_final final.sh
+WAIT3=$(qsub -W depend=afterok:$WAIT1 -N PLAS_mapped mapped.sh)
+
+for dir in 01.data/02.fasta/*; do
+	if [ -d $dir ]; then
+		WAIT4+=$(qsub -W depend=afterok:$WAIT3 -N PLAS_unmapped unmappedBowtie.sh)	
+		WAIT4+=",afterok:"
+	fi
+done
+WAIT4=${WAIT4%?????????}
+
+qsub -W depend=afterok:$WAIT4 -N PLAS_final final.sh
+	
 echo "All done!"

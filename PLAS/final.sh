@@ -1,44 +1,46 @@
 #PBS -S /bin/bash
 #PBS -q batch
-#PBS -N PLASF
+#PBS -N Master_PLAS
 #PBS -l nodes=1:ppn=12:HIGHMEM
-#PBS -l walltime=10:00:00
-#PBS -l mem=48gb
+#PBS -l walltime=12:00:00
+#PBS -l mem=50gb
 cd $PBS_O_WORKDIR
+
 module load ncbiblast+
 module load perl/5.20.2-thread
+module load trinity/r20140717
+samplesLeft=""
+samplesRight=""
 
-##Summarize all runs
-# Retrieve header metadata from full length contig list
-grep ">" 01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta > 01.data/05.SplitGenes/03.Full.Length/count1
+## Combine full length contigs from local assembly and unmapped reads assembly
+for sub in 01.data/02.fasta/*; do
+	if [ -d $sub ]; then
+		cat 09.bowtie.full.length/${sub}/unmapped.reads.${sub}.single.fasta >> 09.bowtie.full.length/${sub}/unmapped.reads.${sub}.1.fasta
+	fi
+done
 
-# Remove ">" from entries
-sed -i "s/>//" 01.data/05.SplitGenes/03.Full.Length/count1
+## Assemble unmapped reads using Trinity
+## Get filenames from each sample folder
 
-# Reformat ???
-perl 00.script/b3.full.length.format.pl 01.data/04.GeneOfInterest/GeneID.v1.txt 01.data/05.SplitGenes/03.Full.Length/count1 01.data/05.SplitGenes/03.Full.Length/count2 01.data/05.SplitGenes/03.Full.Length/count3
+for sub in 09.bowtie.full.length/*; do 
+	if [ -d $sub ]; then 
+	sub=$(basename $sub)
+samplesLeft+="09.bowtie.full.length/${sub}/unmapped.reads.${sub}.1.fasta,"
+samplesRight+="09.bowtie.full.length/${sub}/unmapped.reads.${sub}.2.fasta,"
+	fi
+done
 
-#### assemble unmapped reads
-cp 01.data/05.SplitGenes/03.Full.Length/count3 08.full.length/
-cp 01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta 08.full.length/
-time perl 00.script/c9.get.full.length.seq.pl 08.full.length/count3 08.full.length/full.length.contigs.nucl.fasta 08.full.length/Final.v1.fasta
+samplesLeft=${samplesLeft%?}
+samplesRight=${samplesRight%?}
 
-blastx -db 01.data/00.PriorData/ptr.proteome.fa -query 08.full.length/Final.v1.fasta -out 08.full.length/Final.v1.ptr.blastx.out -evalue 1e-5 -outfmt 6 -num_threads 32 -max_target_seqs 1
+Trinity --seqType fa --CPU 4 --JM "20"G --left "$samplesLeft" --right "$samplesRight" --output 10.unmapped.reads.trinity
 
-makeblastdb -in 08.full.length/Final.v1.fasta -dbtype nucl
+perl 00.script/06.truncate.header.pl 10.unmapped.reads.trinity/Trinity.fasta 10.unmapped.reads.trinity/Trinity.new.fasta
 
-blastn -db 08.full.length/Final.v1.fasta -query 08.full.length/Final.v1.fasta -out 08.full.length/Final.v1.blastn.xml.out -evalue 1e-5 -outfmt 5 -max_target_seqs 5
+makeblastdb -in 08.full.length/Final.fasta -dbtype nucl
 
-time perl 00.script/c11.remove.redundancy.pl 08.full.length/Final.v1.blastn.xml.out 08.full.length/Final.v1.fasta 08.full.length/Final.v2.fasta self 08.full.length/Final.v1.ptr.blastx.out > 08.full.length/record.run1
+blastn -db 08.full.length/Final.fasta -query 10.unmapped.reads.trinity/Trinity.new.fasta -out 10.unmapped.reads.trinity/Trinity.new.blastn.xml.out -evalue 1e-5 -outfmt 5 -max_target_seqs 1
 
-makeblastdb -in 08.full.length/Final.v2.fasta -dbtype nucl
+perl 00.script/c11.remove.redundancy.pl 10.unmapped.reads.trinity/Trinity.new.blastn.xml.out 10.unmapped.reads.trinity/Trinity.new.fasta 10.unmapped.reads.trinity/temp.fasta query > 10.unmapped.reads.trinity/remove.redundancy.log
 
-blastn -db 08.full.length/Final.v2.fasta -query 08.full.length/Final.v2.fasta -out 08.full.length/Final.v2.blastn.xml.out -evalue 1e-5 -outfmt 5 -max_target_seqs 5
-
-blastx -db 01.data/00.PriorData/ptr.proteome.fa -query 08.full.length/Final.v2.fasta -out 08.full.length/Final.v2.ptr.blastx.out -evalue 1e-5 -outfmt 6 -num_threads 32 -max_target_seqs 1
-
-time perl 00.script/101.transfer.saturate.seq.pl 08.full.length/Final.v2.ptr.blastx.out 08.full.length/Final.v2.fasta 01.data/00.PriorData/ptr.proteome.fa 08.full.length Final.v2.ptr pct 0.02
-
-cd 08.full.length/
-ln -sf Final.v2.ptr.full.contigs.nucl.fasta Final.fasta
-cd ../
+cat 08.full.length/Final.fasta 10.unmapped.reads.trinity/temp.fasta > 01.data/06.TargetTranscriptome/transcriptome.v1.fa

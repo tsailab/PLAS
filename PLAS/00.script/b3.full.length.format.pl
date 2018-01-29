@@ -47,7 +47,6 @@ foreach my $line (<COUNT1>){
 			
 			## open old run blast file
 			open(BLT1, "07.map.back/03.bowtie.nucl/run.$oldrun/$gr/$gr.contigs.blast.out");
-			print("Tried to open 07.map.back/03.bowtie.nucl/run.$oldrun/$gr/$gr.contigs.blast.out\n\n");
 			my $oldbits = 0;
 			my $oldmismatch = 0;
 			my $oldlen = 0;
