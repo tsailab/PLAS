@@ -1,12 +1,11 @@
 #PBS -S /bin/bash
 #PBS -q batch
-#PBS -N Master_PLAS
 #PBS -l nodes=1:ppn=12:HIGHMEM
 #PBS -l walltime=12:00:00
-#PBS -l mem=50gb
+#PBS -l mem=48gb
 cd $PBS_O_WORKDIR
 
-module load ncbiblast+
+module load ncbiblast+/2.2.29
 module load perl/5.20.2-thread
 module load trinity/r20140717
 samplesLeft=""

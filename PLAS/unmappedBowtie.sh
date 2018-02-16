@@ -1,11 +1,13 @@
 #PBS -S /bin/bash
 #PBS -q batch
 #PBS -N bowtie.full.length.${sub}.sh
-#PBS -l nodes=1:ppn=$thread:AMD
-#PBS -l walltime=48:00:00
+#PBS -l nodes=1:ppn=08:HIGHMEM
+#PBS -l walltime=08:00:00
 #PBS -l mem=40gb
 cd $PBS_O_WORKDIR
-				
+
+module load bowtie2/2.2.4
+sub=$SUB	
 R1="01.data/02.Fasta/${sub}/${sub}.R1.fasta_pairs_R1.fasta"
 R2="01.data/02.Fasta/${sub}/${sub}.R2.fasta_pairs_R2.fasta"
 R3="01.data/02.Fasta/${sub}/${sub}.R1.fasta_singles.fasta"

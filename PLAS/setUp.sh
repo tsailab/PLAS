@@ -1,4 +1,4 @@
-mkdir 00.script/01.flag
+mkdir 00.script/
 mkdir -p 01.data/{00.PriorData,01.Fastq,03.MCL,04.GeneOfInterest,05.SplitGenes,06.TargetTranscriptome}
 mkdir 01.data/03.MCL/{01.blast,02.mcl}
 mkdir 01.data/05.SplitGenes/{01.Protein,02.Transcript,03.Full.Length}

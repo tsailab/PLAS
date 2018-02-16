@@ -1,10 +1,9 @@
 #PBS -S /bin/bash
 #PBS -q batch
-#PBS -l nodes=1:ppn=48:HIGHMEM
-#PBS -l walltime=00:45:00
+#PBS -l nodes=1:ppn=12:HIGHMEM
+#PBS -l walltime=08:00:00
 #PBS -l mem=50gb
-#PBS -N prerun
-#PBS -o zzz.o%j
+#PBS -N preRun
 # this part only needs to be run once, it prepares and formats the data
 # error-checking function, kills job and reports to error file on non-zero exit
 error_check() {
@@ -15,13 +14,13 @@ error_check() {
 return 0
 }
 
-logfolder="00.script/01.log/"
+logfolder="00.script/01.log"
 #Load required modules
-module load ncbiblast+
-module load perl
-module load mcl
-module load R
-module load diamond
+module load ncbiblast+/2.6.0
+module load perl/5.20.2-thread
+module load mcl/14-137
+module load R/3.3.2
+module load diamond/0.8.36
 module load python/2.7.8
 # ncbi blast to create protein databases
 

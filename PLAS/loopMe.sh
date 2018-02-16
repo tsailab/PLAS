@@ -1,7 +1,7 @@
 #PBS -S /bin/bash
 #PBS -q batch
 #PBS -l nodes=1:ppn=12:HIGHMEM
-#PBS -l walltime=06:00:00
+#PBS -l walltime=10:00:00
 #PBS -l mem=48gb
 
 ###################
@@ -10,10 +10,11 @@
 cd $PBS_O_WORKDIR
 run=${RUN}
 sub=${SUB}
-module load bowtie2
-module load ncbiblast+ 
+module load bowtie2/2.2.4
+module load ncbiblast+/2.6.0
 module load perl/5.20.2-thread
-module load trinity
+module load trinity/2.4.0
+
 evalue=1e-3
 
 error_check() {

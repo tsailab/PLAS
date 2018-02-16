@@ -18,11 +18,11 @@ return 0
 }
 
 echo 'Loading modules...' >> $logfolder/job.monitor_$sub.txt
-module load ncbiblast+
-module load python
-module load diamond
-module load trinity
-module load bowtie
+module load ncbiblast+/2.6.0
+module load python/2.7.8
+module load diamond/0.8.36
+module load bowtie2/2.2.4
+module load trinity/2.4.0
 
 #########################################################
 #######derived from 02.makeblastdb.folder.pl#############

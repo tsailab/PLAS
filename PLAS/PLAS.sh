@@ -1,11 +1,11 @@
 #PBS -S /bin/bash
 #PBS -q batch
 #PBS -N Master_PLAS
-#PBS -l nodes=1:ppn=12:HIGHMEM
-#PBS -l walltime=12:00:00
+#PBS -l nodes=1:ppn=04:HIGHMEM
+#PBS -l walltime=08:00:00
 #PBS -l mem=50gb
 cd $PBS_O_WORKDIR
-repeats=5
+repeats=15
 counter=0
 WAIT1=""
 WAIT2=""
@@ -38,9 +38,10 @@ done
 
 WAIT3=$(qsub -W depend=afterok:$WAIT1 -N PLAS_mapped mapped.sh)
 
-for dir in 01.data/02.fasta/*; do
+for dir in 01.data/01.Fastq/*; do
 	if [ -d $dir ]; then
-		WAIT4+=$(qsub -W depend=afterok:$WAIT3 -N PLAS_unmapped unmappedBowtie.sh)	
+	dir=$(basename $dir)
+		WAIT4+=$(qsub -W depend=afterok:$WAIT3 -N PLAS_unmapped -v SUB=$dir unmappedBowtie.sh)	
 		WAIT4+=",afterok:"
 	fi
 done

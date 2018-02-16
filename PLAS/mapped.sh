@@ -5,9 +5,9 @@
 #PBS -l walltime=10:00:00
 #PBS -l mem=48gb
 cd $PBS_O_WORKDIR
-module load ncbiblast+
 module load perl/5.20.2-thread
-module load bowtie2
+module load bowtie2/2.2.4
+module load ncbiblast+/2.6.0
 
 ##Summarize all runs
 # Retrieve header metadata from full length contig list
@@ -24,6 +24,7 @@ cp 01.data/05.SplitGenes/03.Full.Length/count3 08.full.length/
 cp 01.data/05.SplitGenes/03.Full.Length/full.length.contigs.nucl.fasta 08.full.length/
 time perl 00.script/c9.get.full.length.seq.pl 08.full.length/count3 08.full.length/full.length.contigs.nucl.fasta 08.full.length/Final.v1.fasta
 
+makeblastdb -in 01.data/00.PriorData/ptr.proteome.fa -dbtype prot
 blastx -db 01.data/00.PriorData/ptr.proteome.fa -query 08.full.length/Final.v1.fasta -out 08.full.length/Final.v1.ptr.blastx.out -evalue 1e-5 -outfmt 6 -num_threads 32 -max_target_seqs 1
 
 makeblastdb -in 08.full.length/Final.v1.fasta -dbtype nucl
